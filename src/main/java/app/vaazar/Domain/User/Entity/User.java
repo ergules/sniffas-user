@@ -2,6 +2,9 @@ package app.vaazar.Domain.User.Entity;
 
 import app.vaazar.Domain.Address.Entity.Address;
 import app.vaazar.Domain.BaseEntity.BaseEntity;
+import app.vaazar.Domain.Company.Entity.Company;
+import app.vaazar.Domain.i18n.SupportedLanguage;
+import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -37,14 +40,19 @@ public class User extends BaseEntity implements UserDetails, Serializable {
 
     private String storeName; // role.SELLER or role.COMPANY must fill this field
     private String storeLink;
+    private String IBAN;
 
     @Enumerated(EnumType.STRING)
     private Role role = Role.USER;
+    @Enumerated(EnumType.STRING)
+    private SupportedLanguage language;
     private String username;
     private String password;
 
-    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "user")
     private List<Address> addresses;
+    @OneToOne(mappedBy = "user")
+    private Company company;
 
     @Transient
     @JsonIgnore
@@ -59,13 +67,26 @@ public class User extends BaseEntity implements UserDetails, Serializable {
     public User() {
     }
 
-    public void updateWithEntity(User other) {
+    public void updateBaseFields(User other) {
         this.firstname = other.firstname;
         this.lastname = other.lastname;
         this.birthdate = other.birthdate;
         this.profilePhoto = other.profilePhoto;
+        this.language = other.language;
+    }
+
+    public void updateSellerFields(User other) {
         this.storeName = other.storeName;
         this.storeLink = other.storeLink;
+        this.IBAN = other.IBAN;
+    }
+
+    public boolean checkSellerInfo() {
+        return ObjectUtils.allNotNull(storeName, IBAN, email);
+    }
+
+    public boolean checkCompanyInfo() {
+        return checkSellerInfo() && company != null && company.checkForRequiredFields();
     }
 
     @Override
@@ -195,6 +216,32 @@ public class User extends BaseEntity implements UserDetails, Serializable {
 
     public void setAddresses(List<Address> addresses) {
         this.addresses = addresses;
+    }
+
+    public String getIBAN() {
+        return IBAN;
+    }
+
+    public void setIBAN(String IBAN) {
+        this.IBAN = IBAN;
+    }
+
+    public Company getCompany() {
+        return company;
+    }
+
+    public void setCompany(Company company) {
+        this.company = company;
+    }
+
+    public SupportedLanguage getLanguage() {
+        if (language == null)
+            language = SupportedLanguage.getDefault();
+        return language;
+    }
+
+    public void setLanguage(SupportedLanguage language) {
+        this.language = language;
     }
 
     public void setAuthorities(Set<SimpleGrantedAuthority> authorities) {
