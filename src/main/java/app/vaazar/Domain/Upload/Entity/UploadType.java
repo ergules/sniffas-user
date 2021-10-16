@@ -1,11 +1,11 @@
-package app.vaazar.Domain.Upload;
+package app.vaazar.Domain.Upload.Entity;
 
 public enum UploadType {
     PROFILE_PIC("U%sPP-"),
     COMPANY_REGISTRY("UD%sCR-"),
     TAX_REGISTRY("UD%sTR-"),
     GM_IDENTITY("UD%sGMI-"),
-    SH_IDENTITY("UD%sSHI-%s-");
+    SH_IDENTITY("UD%sSHI-");
 
     UploadType(String template) {
         this.template = template;
@@ -13,7 +13,7 @@ public enum UploadType {
 
     private final String template;
 
-    private String getTemplate() {
+    public String getTemplate() {
         return  template;
     }
 

@@ -6,9 +6,12 @@ import app.vaazar.Domain.Approval.Entity.Approval;
 import app.vaazar.Domain.Company.Boundary.CompanyService;
 import app.vaazar.Domain.Company.Entity.Company;
 import app.vaazar.Domain.Company.Entity.ShareHolder;
+import app.vaazar.Domain.Upload.Control.UploadUtil;
+import app.vaazar.Domain.Upload.Entity.UploadType;
 import app.vaazar.Domain.User.Boundary.UserService;
 import app.vaazar.Domain.User.Entity.User;
 import app.vaazar.Endpoint.Dto.SellerRequestDto;
+import app.vaazar.Service.FileStorage;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -26,11 +29,11 @@ public class UsersApi {
     private final UserService userService;
     private final CompanyService companyService;
     private final AddressService addressService;
-
+    private final FileStorage fileStorage;
 
     @GetMapping
-    public User updateUser(@PathVariable Long userId,
-                           UsernamePasswordAuthenticationToken contextUser) {
+    public User getUser(@PathVariable Long userId,
+                        UsernamePasswordAuthenticationToken contextUser) {
         User loggedUser = (User) contextUser.getPrincipal();
         if (!userId.equals(loggedUser.getId()))
             throw new AccessDeniedException("logged userId do not match with target");
@@ -67,6 +70,20 @@ public class UsersApi {
             throw new AccessDeniedException("logged userId do not match with target");
         address.setId(addressId);
         return addressService.updateAddress(address, userId);
+    }
+
+    @DeleteMapping("/addresses/{addressId}")
+    public ResponseEntity<Void> deleteAddress(@PathVariable Long userId,
+                                              @PathVariable Long addressId,
+                                              @Valid @RequestBody Address address,
+                                              Principal principal) {
+        User loggedUser = (User) principal;
+        if (!userId.equals(loggedUser.getId()))
+            throw new AccessDeniedException("logged userId do not match with target");
+        address.setId(addressId);
+
+        addressService.deleteAddress(address, userId);
+        return ResponseEntity.ok().build();
     }
 
     @PutMapping("/companies/{companyId}")
@@ -114,20 +131,6 @@ public class UsersApi {
         return ResponseEntity.ok().build();
     }
 
-    @DeleteMapping("/addresses/{addressId}")
-    public ResponseEntity<Void> deleteAddress(@PathVariable Long userId,
-                                              @PathVariable Long addressId,
-                                              @Valid @RequestBody Address address,
-                                              Principal principal) {
-        User loggedUser = (User) principal;
-        if (!userId.equals(loggedUser.getId()))
-            throw new AccessDeniedException("logged userId do not match with target");
-        address.setId(addressId);
-
-        addressService.deleteAddress(address, userId);
-        return ResponseEntity.ok().build();
-    }
-
     @PostMapping("/seller-requests")
     public ResponseEntity<Approval> requestSellerApproval(@PathVariable Long userId,
                                                           @Valid @RequestBody SellerRequestDto sellerRequestDto,
@@ -148,9 +151,21 @@ public class UsersApi {
             throw new AccessDeniedException("request belongs an other user");
     }
 
-    public UsersApi(UserService userService, CompanyService companyService, AddressService addressService) {
+    @GetMapping("/upload-link")
+    public String getPresignedLink(@PathVariable Long userId,
+                                    @RequestParam UploadType type,
+                                    UsernamePasswordAuthenticationToken contextUser) {
+        User loggedUser = (User) contextUser.getPrincipal();
+        if (!userId.equals(loggedUser.getId()))
+            throw new AccessDeniedException("logged userId do not match with target");
+        String uploadName = UploadUtil.nameUpload(type, userId);
+        return fileStorage.preSignWithObjectKey(uploadName, type);
+    }
+
+    public UsersApi(UserService userService, CompanyService companyService, AddressService addressService, FileStorage fileStorage) {
         this.userService = userService;
         this.companyService = companyService;
         this.addressService = addressService;
+        this.fileStorage = fileStorage;
     }
 }
