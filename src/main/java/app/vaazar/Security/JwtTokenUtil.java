@@ -2,6 +2,7 @@ package app.vaazar.Security;
 
 import app.vaazar.Domain.User.Entity.Role;
 import app.vaazar.Domain.User.Entity.User;
+import app.vaazar.Domain.i18n.SupportedLanguage;
 import io.jsonwebtoken.*;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,8 +45,11 @@ public class JwtTokenUtil {
     }
 
     public String generateAccessToken(User user) {
-        logger.info("generate token for {}", user.getUsername());
-        Claims claims = Jwts.claims().setSubject(format("%s%s%s", user.getUsername(), SEPARATOR, user.getId()));
+        logger.info("generate token for {}-{}",user.getId(), user.getEmail());
+        Claims claims = Jwts.claims().setSubject(format("%s%s%s%s%s",
+                user.getId(), SEPARATOR,
+                user.getLanguage().name(), SEPARATOR,
+                user.getEmail()));
                 claims.put(ROLES_KEY, user.getAuthorities());
         return Jwts.builder()
                 .setClaims(claims)
@@ -67,9 +71,10 @@ public class JwtTokenUtil {
             List<SimpleGrantedAuthority> authorities = getRoles(token);
             user.setRole(Role.valueOf(authorities.get(0).getAuthority()));
         } catch (Exception ignore){}
-
-        user.setId(Long.parseLong(claims.getSubject().split(SEPARATOR)[1]));
-        user.setUsername(claims.getSubject().split(SEPARATOR)[0]);
+        String[] embeddedInfo = claims.getSubject().split(SEPARATOR);
+        user.setId(Long.parseLong(embeddedInfo[0]));
+        user.setLanguage(SupportedLanguage.valueOf(embeddedInfo[1]));
+        user.setEmail(embeddedInfo[2]);
         return user;
     }
 

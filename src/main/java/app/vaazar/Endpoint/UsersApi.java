@@ -2,6 +2,7 @@ package app.vaazar.Endpoint;
 
 import app.vaazar.Domain.Address.Boundary.AddressService;
 import app.vaazar.Domain.Address.Entity.Address;
+import app.vaazar.Domain.Approval.Boundary.ApprovalService;
 import app.vaazar.Domain.Approval.Entity.Approval;
 import app.vaazar.Domain.Company.Boundary.CompanyService;
 import app.vaazar.Domain.Company.Entity.Company;
@@ -19,7 +20,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
-import java.security.Principal;
+import java.util.List;
 
 @RestController
 @RequestMapping("/users/{userId}")
@@ -30,6 +31,7 @@ public class UsersApi {
     private final CompanyService companyService;
     private final AddressService addressService;
     private final FileStorage fileStorage;
+    private final ApprovalService approvalService;
 
     @GetMapping
     public User getUser(@PathVariable Long userId,
@@ -75,14 +77,12 @@ public class UsersApi {
     @DeleteMapping("/addresses/{addressId}")
     public ResponseEntity<Void> deleteAddress(@PathVariable Long userId,
                                               @PathVariable Long addressId,
-                                              @Valid @RequestBody Address address,
-                                              Principal principal) {
-        User loggedUser = (User) principal;
+                                              UsernamePasswordAuthenticationToken contextUser) {
+        User loggedUser = (User) contextUser.getPrincipal();
         if (!userId.equals(loggedUser.getId()))
             throw new AccessDeniedException("logged userId do not match with target");
-        address.setId(addressId);
 
-        addressService.deleteAddress(address, userId);
+        addressService.deleteAddress(addressId, userId);
         return ResponseEntity.ok().build();
     }
 
@@ -131,6 +131,15 @@ public class UsersApi {
         return ResponseEntity.ok().build();
     }
 
+    @GetMapping("/seller-requests")
+    public ResponseEntity<List<Approval>> getSellerApprovals(@PathVariable Long userId,
+                                                             UsernamePasswordAuthenticationToken contextUser) {
+        User loggedUser = (User) contextUser.getPrincipal();
+        if (!userId.equals(loggedUser.getId()))
+            throw new AccessDeniedException("logged userId do not match with target");
+        return ResponseEntity.ok(approvalService.getApprovalsOfUser(userId));
+    }
+
     @PostMapping("/seller-requests")
     public ResponseEntity<Approval> requestSellerApproval(@PathVariable Long userId,
                                                           @Valid @RequestBody SellerRequestDto sellerRequestDto,
@@ -162,10 +171,11 @@ public class UsersApi {
         return fileStorage.preSignWithObjectKey(uploadName, type);
     }
 
-    public UsersApi(UserService userService, CompanyService companyService, AddressService addressService, FileStorage fileStorage) {
+    public UsersApi(UserService userService, CompanyService companyService, AddressService addressService, FileStorage fileStorage, ApprovalService approvalService) {
         this.userService = userService;
         this.companyService = companyService;
         this.addressService = addressService;
         this.fileStorage = fileStorage;
+        this.approvalService = approvalService;
     }
 }

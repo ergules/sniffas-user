@@ -31,13 +31,14 @@ public class PublicApi {
     FirebaseAuthService firebaseService;
 
     @PostMapping("login")
-    public ResponseEntity<Void> loginWithFirebaseToken(@RequestBody String token) throws AuthenticationException {
+    public ResponseEntity<User> loginWithFirebaseToken(@RequestBody String token) throws AuthenticationException {
         try {
             FirebaseToken firebaseToken = firebaseService.verifyIdToken(token);
-            Optional<User> user = userService.findByUid(firebaseToken.getUid());
+            User user = userService.findByUid(firebaseToken.getUid()).orElseThrow();
             return ResponseEntity.ok()
-                    .header(HttpHeaders.AUTHORIZATION, jwtTokenUtil.generateAccessToken(user.orElseThrow()))
-                    .build();
+                    .header(HttpHeaders.AUTHORIZATION, jwtTokenUtil.generateAccessToken(user))
+                    .body(user);
+
         } catch (FirebaseAuthException fae) {
             throw new AuthenticationException("token is invalid");
         } catch (NoSuchElementException nse) {

@@ -67,6 +67,26 @@ public class User extends BaseEntity implements UserDetails, Serializable {
     public User() {
     }
 
+    @Override
+    public String toString() {
+        return "User{" +
+                "firstname='" + firstname +
+                "', lastname='" + lastname +
+                "', email='" + email +
+                "', firebaseUid='" + firebaseUid +
+                "', mobilePhone='" + mobilePhone +
+                "', birthdate=" + birthdate +
+                ", profilePhoto='" + profilePhoto +
+                "', storeName='" + storeName +
+                "', storeLink='" + storeLink +
+                "', IBAN='" + IBAN +
+                "', role=" + role +
+                ", language=" + language +
+                ", username='" + username +
+                ", company=" + company +
+                '}';
+    }
+
     public void updateBaseFields(User other) {
         this.firstname = other.firstname;
         this.lastname = other.lastname;

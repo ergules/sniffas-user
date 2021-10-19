@@ -37,8 +37,8 @@ public class AddressService {
         return repository.save(address);
     }
 
-    public void deleteAddress(Address entity, Long userId) {
-        Address address = repository.findById(entity.getId()).orElseThrow();
+    public void deleteAddress(Long entityId, Long userId) {
+        Address address = repository.findById(entityId).orElseThrow();
         if (userId != null && !userId.equals(address.getUser().getId()))
             throw new AccessDeniedException("address does not belong to user");
         address.setUser(null);
