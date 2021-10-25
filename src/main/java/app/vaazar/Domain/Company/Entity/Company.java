@@ -1,5 +1,6 @@
 package app.vaazar.Domain.Company.Entity;
 
+import app.vaazar.Domain.Address.Entity.Address;
 import app.vaazar.Domain.BaseEntity.BaseEntity;
 import app.vaazar.Domain.BaseEntity.IdSerializer;
 import app.vaazar.Domain.User.Entity.User;
@@ -25,6 +26,11 @@ public class Company extends BaseEntity {
     private String companyExecutiveLastName;
     private String companyExecutiveIdentity; // file
 
+    private String phoneNumber;
+    @OneToOne
+    @Cascade(CascadeType.ALL)
+    private Address address;
+
     @OneToMany(mappedBy = "company")
     @Cascade(CascadeType.ALL)
     private Set<ShareHolder> shareHolders;
@@ -35,7 +41,7 @@ public class Company extends BaseEntity {
     private User user;
 
     public boolean checkForRequiredFields() {
-        return ObjectUtils.allNotNull(companyName, tradeRegistry, taxRegistry,
+        return ObjectUtils.allNotNull(companyName, tradeRegistry, taxRegistry, address,
                 companyExecutiveFirstName, companyExecutiveLastName, companyExecutiveIdentity);
     }
 
@@ -48,6 +54,7 @@ public class Company extends BaseEntity {
         this.companyExecutiveFirstName = other.companyExecutiveFirstName;
         this.companyExecutiveLastName = other.companyExecutiveLastName;
         this.companyExecutiveIdentity = other.companyExecutiveIdentity;
+        this.address.updateWithEntity(other.address);
     }
 
     public String getCompanyName() {
@@ -112,6 +119,22 @@ public class Company extends BaseEntity {
 
     public void setCompanyExecutiveIdentity(String companyExecutiveIdentity) {
         this.companyExecutiveIdentity = companyExecutiveIdentity;
+    }
+
+    public String getPhoneNumber() {
+        return phoneNumber;
+    }
+
+    public void setPhoneNumber(String phoneNumber) {
+        this.phoneNumber = phoneNumber;
+    }
+
+    public Address getAddress() {
+        return address;
+    }
+
+    public void setAddress(Address address) {
+        this.address = address;
     }
 
     public Set<ShareHolder> getShareHolders() {

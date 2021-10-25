@@ -2,13 +2,11 @@ package app.vaazar.Domain.Address.Entity;
 
 import app.vaazar.Domain.BaseEntity.BaseEntity;
 import app.vaazar.Domain.BaseEntity.IdSerializer;
+import app.vaazar.Domain.Company.Entity.Company;
 import app.vaazar.Domain.User.Entity.User;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
-import javax.persistence.Entity;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.Table;
+import javax.persistence.*;
 
 @Entity
 @Table(name = "ADDRESSES")
@@ -20,12 +18,18 @@ public class Address extends BaseEntity {
     private String city;
     private String town;
     private String zipCode;
+    private String streetName;
+    private String streetNo;
     private String addressString;
 
     @ManyToOne
     @JoinColumn(name = "USER_ID")
     @JsonSerialize(using = IdSerializer.class)
     private User user;
+
+    @OneToOne(mappedBy = "address")
+    @JsonSerialize(using = IdSerializer.class)
+    private Company company;
 
     public void updateWithEntity(Address other) {
         this.title = other.title;
@@ -35,6 +39,8 @@ public class Address extends BaseEntity {
         this.town = other.town;
         this.zipCode = other.zipCode;
         this.addressString = other.addressString;
+        this.streetName = other.streetName;
+        this.streetNo = other.streetNo;
     }
 
     public String getTitle() {
@@ -91,6 +97,22 @@ public class Address extends BaseEntity {
 
     public void setTown(String town) {
         this.town = town;
+    }
+
+    public String getStreetName() {
+        return streetName;
+    }
+
+    public void setStreetName(String streetName) {
+        this.streetName = streetName;
+    }
+
+    public String getStreetNo() {
+        return streetNo;
+    }
+
+    public void setStreetNo(String streetNo) {
+        this.streetNo = streetNo;
     }
 
     public User getUser() {
