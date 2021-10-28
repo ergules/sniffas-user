@@ -13,6 +13,7 @@ import app.vaazar.Domain.User.Boundary.UserService;
 import app.vaazar.Domain.User.Entity.User;
 import app.vaazar.Endpoint.Dto.SellerRequestDto;
 import app.vaazar.Service.FileStorage;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -25,6 +26,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/users/{userId}")
 @PreAuthorize("isAuthenticated()")
+@SecurityRequirement(name = "jwt")
 public class UsersApi {
 
     private final UserService userService;
