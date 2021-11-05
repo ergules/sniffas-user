@@ -4,6 +4,8 @@ import app.vaazar.Domain.BaseEntity.BaseEntity;
 import app.vaazar.Domain.BaseEntity.IdSerializer;
 import app.vaazar.Domain.Company.Entity.Company;
 import app.vaazar.Domain.User.Entity.User;
+import app.vaazar.Security.HashUtil;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 import javax.persistence.*;
@@ -41,6 +43,11 @@ public class Address extends BaseEntity {
         this.addressString = other.addressString;
         this.streetName = other.streetName;
         this.streetNo = other.streetNo;
+    }
+
+    @JsonProperty("phrase")
+    public String getIdPhrase() {
+        return HashUtil.expressHash("address#" + getId().toString());
     }
 
     public String getTitle() {

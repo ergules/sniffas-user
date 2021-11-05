@@ -32,9 +32,10 @@ public class User extends BaseEntity implements UserDetails, Serializable {
     private String email;
     @NotNull
     @Column(unique = true)
-    private String firebaseUid;
+    private String username;
+    @Column(unique = true) // unique = true did not work with nullable = false on hibernate dialect, add manually to db
+    private String firebaseUid; // did not use @notNull bc validation would fail on register
     private String mobilePhone;
-    @NotNull
     private LocalDate birthdate;
     private String profilePhoto;
 
@@ -46,7 +47,6 @@ public class User extends BaseEntity implements UserDetails, Serializable {
     private Role role = Role.USER;
     @Enumerated(EnumType.STRING)
     private SupportedLanguage language;
-    private String username;
     private String password;
 
     @OneToMany(mappedBy = "user")

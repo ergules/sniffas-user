@@ -9,5 +9,6 @@ import java.util.Optional;
 public interface UserRepository extends CrudRepository<User, Long> {
     User findByUsername(String username);
     Optional<User> findByFirebaseUid(String firebaseUid);
+    boolean existsByUsername(String username);
 }
 

@@ -29,6 +29,10 @@ public class UserService {
         return userRepo.findById(id).orElse(null);
     }
 
+    public boolean isUsernameAvailable(String username) {
+        return !userRepo.existsByUsername(username);
+    }
+
     public User saveUser(User user) {
         return userRepo.save(user);
     }

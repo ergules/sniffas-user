@@ -2,7 +2,10 @@ package app.vaazar.Endpoint.Dto;
 
 import app.vaazar.Domain.User.Entity.User;
 
+import javax.validation.Valid;
+
 public class RegistrationDto {
+    @Valid
     private User user;
     private String token;
 
