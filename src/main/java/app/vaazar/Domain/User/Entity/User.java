@@ -102,7 +102,7 @@ public class User extends BaseEntity implements UserDetails, Serializable {
     }
 
     public boolean checkSellerInfo() {
-        return ObjectUtils.allNotNull(storeName, IBAN, email);
+        return ObjectUtils.allNotNull(username, IBAN, email);
     }
 
     public boolean checkCompanyInfo() {
