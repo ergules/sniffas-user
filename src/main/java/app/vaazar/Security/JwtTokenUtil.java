@@ -33,27 +33,16 @@ public class JwtTokenUtil {
         logger.info("constructed token util : {} ", this);
     }
 
-    public String generateAccessToken(String userMail) {
-        logger.info("generate token for {}", userMail);
-        return Jwts.builder()
-                .setSubject(format("%s", userMail))
-                .setIssuer(jwtIssuer)
-                .setIssuedAt(new Date())
-                .setExpiration(new Date(System.currentTimeMillis() + 24 * 60 * 60 * 1000)) // 1 day
-                .signWith(SignatureAlgorithm.HS512, jwtSecret)
-                .compact();
-    }
-
     public String generateAccessToken(User user) {
         logger.info("generate token for {}-{}",user.getId(), user.getEmail());
-        Claims claims = Jwts.claims().setSubject(format("%s%s%s%s%s",
-                user.getId(), SEPARATOR,
-                user.getLanguage().name(), SEPARATOR,
-                user.getEmail()));
+        String sb = user.getId() + SEPARATOR +
+                user.getUsername() + SEPARATOR +
+                user.getEmail() + SEPARATOR +
+                user.getLanguage();
+        Claims claims = Jwts.claims().setSubject(sb);
                 claims.put(ROLES_KEY, user.getAuthorities());
         return Jwts.builder()
                 .setClaims(claims)
-
                 .setIssuer(jwtIssuer)
                 .setIssuedAt(new Date())
                 .setExpiration(new Date(System.currentTimeMillis() + 24 * 60 * 60 * 1000)) // 1 day
@@ -73,8 +62,9 @@ public class JwtTokenUtil {
         } catch (Exception ignore){}
         String[] embeddedInfo = claims.getSubject().split(SEPARATOR);
         user.setId(Long.parseLong(embeddedInfo[0]));
-        user.setLanguage(SupportedLanguage.valueOf(embeddedInfo[1]));
+        user.setUsername(embeddedInfo[1]);
         user.setEmail(embeddedInfo[2]);
+        user.setLanguage(SupportedLanguage.valueOf(embeddedInfo[3]));
         return user;
     }
 

@@ -22,7 +22,7 @@ public class S3Service implements FileStorage {
     private final Logger log;
     private final S3Presigner presigner;
     private final S3Client s3Client;
-    private static final Duration signExpire = Duration.ofMinutes(6);
+    private static final Duration signExpire = Duration.ofMinutes(3);
 
     @Value("${aws.s3.userDocumentsBucket}")
     String documentsBucket;
