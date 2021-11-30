@@ -1,4 +1,4 @@
-package app.vaazar.Config;
+package app.vaazar.config;
 
 import app.vaazar.Security.JwtTokenFilter;
 import org.slf4j.Logger;
