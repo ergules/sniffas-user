@@ -34,6 +34,7 @@ public class PublicApi {
             FirebaseToken firebaseToken = firebaseService.verifyIdToken(token);
             User user = userService.findByUid(firebaseToken.getUid()).orElseThrow();
             return ResponseEntity.ok()
+                    .header("Access-Control-Expose-Headers", "Authorization")
                     .header(HttpHeaders.AUTHORIZATION, jwtTokenUtil.generateAccessToken(user))
                     .body(user);
 
