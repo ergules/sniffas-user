@@ -4,10 +4,10 @@ import app.vaazar.Domain.Address.Entity.Address;
 import app.vaazar.Domain.BaseEntity.BaseEntity;
 import app.vaazar.Domain.Company.Entity.Company;
 import app.vaazar.Domain.i18n.SupportedLanguage;
+import app.vaazar.Endpoint.Dto.BasicUser;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.persistence.*;
@@ -19,10 +19,29 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 
+import static app.vaazar.Domain.User.Entity.User.BASIC_USERS_IN_LIST;
 
+@SqlResultSetMapping(name = "BasicUserMapping",
+        classes = @ConstructorResult(
+                targetClass = BasicUser.class,
+                columns = {
+                        @ColumnResult(name = "id", type = Long.class),
+                        @ColumnResult(name = "username", type = String.class),
+                        @ColumnResult(name = "firstname", type = String.class),
+                        @ColumnResult(name = "lastname", type = String.class),
+                        @ColumnResult(name = "profile_photo", type = String.class)
+                }
+        )
+)
+@NamedNativeQuery(name = BASIC_USERS_IN_LIST,
+        query = "SELECT id, username, firstname, lastname, profile_photo FROM users WHERE id IN ?1",
+        resultSetMapping = "BasicUserMapping")
 @Entity
 @Table(name = "USERS")
 public class User extends BaseEntity implements UserDetails, Serializable {
+
+    private static final String PREFIX = "USER.";
+    public static final String BASIC_USERS_IN_LIST = PREFIX + "BasicUsersInList";
 
     @NotNull
     private String firstname;

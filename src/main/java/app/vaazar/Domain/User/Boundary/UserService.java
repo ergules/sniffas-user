@@ -8,10 +8,10 @@ import app.vaazar.Domain.Company.Entity.Company;
 import app.vaazar.Domain.User.Control.UserRepository;
 import app.vaazar.Domain.User.Entity.Role;
 import app.vaazar.Domain.User.Entity.User;
+import app.vaazar.Endpoint.Dto.BasicUser;
 import app.vaazar.Endpoint.Dto.SellerRequestDto;
 import com.google.firebase.auth.FirebaseToken;
 import org.springframework.stereotype.Service;
-
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
@@ -35,6 +35,10 @@ public class UserService {
 
     public User saveUser(User user) {
         return userRepo.save(user);
+    }
+
+    public List<BasicUser> findBasicUsers(List<Long> idList) {
+        return userRepo.findBasicUsersInList(idList);
     }
 
     public User updateUserInfo(User user) {

@@ -2,6 +2,7 @@ package app.vaazar.Endpoint;
 
 import app.vaazar.Domain.User.Boundary.UserService;
 import app.vaazar.Domain.User.Entity.User;
+import app.vaazar.Endpoint.Dto.BasicUser;
 import app.vaazar.Endpoint.Dto.RegistrationDto;
 import app.vaazar.Security.JwtTokenUtil;
 import app.vaazar.Service.Firebase.FirebaseAuthService;
@@ -12,16 +13,11 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-import javax.naming.AuthenticationException;
-import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
-
-
+import java.util.List;
 import java.util.NoSuchElementException;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/users/public")
@@ -60,6 +56,10 @@ public class PublicApi {
         return userService.isUsernameAvailable(key);
     }
 
+    @PostMapping("/userInfo")
+    public List<BasicUser> getBasicUsers(@RequestBody List<Long> idList) {
+        return userService.findBasicUsers(idList);
+    }
 
     public PublicApi(Logger log, UserService userService, JwtTokenUtil jwtTokenUtil, FirebaseAuthService firebaseService) {
         this.log = log;
