@@ -21,6 +21,8 @@ public class Company extends BaseEntity {
     private String tradeRegistry;   // file
     private String taxRegistry;     // file
     private String IBAN;
+    @Enumerated(EnumType.STRING)
+    private CompanyType companyType;
 
     private String companyExecutiveFirstName;
     private String companyExecutiveLastName;
@@ -41,7 +43,7 @@ public class Company extends BaseEntity {
     private User user;
 
     public boolean checkForRequiredFields() {
-        return ObjectUtils.allNotNull(companyName, tradeRegistry, taxRegistry, address,
+        return ObjectUtils.allNotNull(companyName, tradeRegistry, taxRegistry, address, companyType,
                 companyExecutiveFirstName, companyExecutiveLastName, companyExecutiveIdentity);
     }
 
@@ -151,5 +153,13 @@ public class Company extends BaseEntity {
 
     public void setUser(User user) {
         this.user = user;
+    }
+
+    public CompanyType getCompanyType() {
+        return companyType;
+    }
+
+    public void setCompanyType(CompanyType companyType) {
+        this.companyType = companyType;
     }
 }
