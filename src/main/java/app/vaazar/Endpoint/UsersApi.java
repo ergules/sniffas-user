@@ -13,6 +13,7 @@ import app.vaazar.Domain.User.Boundary.UserService;
 import app.vaazar.Domain.User.Entity.User;
 import app.vaazar.Endpoint.Dto.SellerRequestDto;
 import app.vaazar.Service.FileStorage;
+import com.google.firebase.auth.FirebaseAuthException;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
@@ -47,7 +48,7 @@ public class UsersApi {
     @PutMapping
     public User updateUser(@PathVariable Long userId,
                            @Valid @RequestBody User user,
-                           UsernamePasswordAuthenticationToken contextUser) {
+                           UsernamePasswordAuthenticationToken contextUser) throws FirebaseAuthException {
         User loggedUser = (User) contextUser.getPrincipal();
         if (!userId.equals(loggedUser.getId()) || user.getId() != null && !userId.equals(user.getId()))
             throw new AccessDeniedException("logged userId do not match with target");

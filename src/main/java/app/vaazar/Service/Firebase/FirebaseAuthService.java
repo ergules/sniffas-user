@@ -6,6 +6,7 @@ import com.google.firebase.FirebaseOptions;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseAuthException;
 import com.google.firebase.auth.FirebaseToken;
+import com.google.firebase.auth.UserRecord;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -24,6 +25,10 @@ public class FirebaseAuthService {
 
     public FirebaseToken verifyIdToken(String token) throws FirebaseAuthException {
         return auth.verifyIdToken(token);
+    }
+
+    public UserRecord getFirebaseRecord(String uid) throws FirebaseAuthException {
+        return auth.getUser(uid);
     }
 
     @PostConstruct

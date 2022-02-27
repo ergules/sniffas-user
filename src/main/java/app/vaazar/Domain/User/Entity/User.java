@@ -112,6 +112,7 @@ public class User extends BaseEntity implements UserDetails, Serializable {
         this.birthdate = other.birthdate;
         this.profilePhoto = other.profilePhoto;
         this.language = other.language;
+        this.username = other.username;
     }
 
     public void updateSellerFields(User other) {
