@@ -1,21 +1,26 @@
 package app.vaazar.Endpoint.Dto;
 
+import app.vaazar.Domain.User.Entity.Role;
+
 public class BasicUser {
     private Long id;
     private String username;
     private String firstname;
     private String lastname;
     private String profilePhoto;
+    private Role role;
 
     public BasicUser() {
     }
 
-    public BasicUser(Long id, String username, String firstname, String lastname, String profilePhoto) {
+    public BasicUser(Long id, String username, String firstname, String lastname, String profilePhoto, String role) {
         this.id = id;
         this.username = username;
         this.firstname = firstname;
         this.lastname = lastname;
         this.profilePhoto = profilePhoto;
+        if (role != null)
+            this.role = Role.valueOf(role);
     }
 
     public Long getId() {
@@ -56,5 +61,13 @@ public class BasicUser {
 
     public void setProfilePhoto(String profilePhoto) {
         this.profilePhoto = profilePhoto;
+    }
+
+    public Role getRole() {
+        return role;
+    }
+
+    public void setRole(Role role) {
+        this.role = role;
     }
 }

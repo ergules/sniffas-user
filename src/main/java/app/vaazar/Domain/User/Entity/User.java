@@ -19,7 +19,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 
-import static app.vaazar.Domain.User.Entity.User.BASIC_USERS_IN_LIST;
+import static app.vaazar.Domain.User.Entity.User.*;
 
 @SqlResultSetMapping(name = "BasicUserMapping",
         classes = @ConstructorResult(
@@ -29,25 +29,74 @@ import static app.vaazar.Domain.User.Entity.User.BASIC_USERS_IN_LIST;
                         @ColumnResult(name = "username", type = String.class),
                         @ColumnResult(name = "firstname", type = String.class),
                         @ColumnResult(name = "lastname", type = String.class),
-                        @ColumnResult(name = "profile_photo", type = String.class)
+                        @ColumnResult(name = "profile_photo", type = String.class),
+                        @ColumnResult(name = "role", type = String.class)
+                }
+        )
+)
+@SqlResultSetMapping(name = "CountMapping",
+        classes = @ConstructorResult(
+                targetClass = Long.class,
+                columns = {
+                        @ColumnResult(name = "count(*)", type = Long.class),
                 }
         )
 )
 @NamedNativeQuery(name = BASIC_USERS_IN_LIST,
-        query = "SELECT id, username, firstname, lastname, profile_photo FROM users WHERE id IN ?1",
+        query = SELECT_BASIC_FIELDS + "WHERE id IN ?1",
         resultSetMapping = "BasicUserMapping")
+@NamedNativeQuery(name = BASIC_USERS_ALL,
+        query = SELECT_BASIC_FIELDS + "WHERE deleted <> 1",
+        resultSetMapping = "BasicUserMapping")
+@NamedNativeQuery(name = BASIC_USERS_ALL + ".count", resultSetMapping = "CountMapping",
+        query = "SELECT count(*) FROM users WHERE deleted <> 1")
+@NamedNativeQuery(name = BASIC_USERS_BY_NAME_QUERY,
+        query = SELECT_BASIC_FIELDS + "WHERE deleted <> 1 AND " + NAME_FIELDS_QUERY,
+        resultSetMapping = "BasicUserMapping")
+@NamedNativeQuery(name = BASIC_USERS_BY_NAME_QUERY + ".count", resultSetMapping = "CountMapping",
+        query = "SELECT count(*) FROM users WHERE deleted <> 1 AND " + NAME_FIELDS_QUERY)
+@NamedNativeQuery(name = BASIC_USERS_BY_EMAIL_QUERY,
+        query = SELECT_BASIC_FIELDS + "WHERE deleted <> 1 AND email like LOWER(CONCAT('%',?1,'%'))",
+        resultSetMapping = "BasicUserMapping")
+@NamedNativeQuery(name = BASIC_USERS_BY_EMAIL_QUERY + ".count", resultSetMapping = "CountMapping",
+        query = "SELECT count(*) FROM users WHERE deleted <> 1 AND email like LOWER(CONCAT('%',?1,'%'))")
+@NamedNativeQuery(name = BASIC_SELLERS_ALL,
+        query = SELECT_BASIC_FIELDS + "WHERE deleted <> 1 AND role IN ('SELLER','COMPANY')",
+        resultSetMapping = "BasicUserMapping")
+@NamedNativeQuery(name = BASIC_SELLERS_ALL + ".count", resultSetMapping = "CountMapping",
+        query = "SELECT count(*) FROM users WHERE deleted <> 1 AND role IN ('SELLER','COMPANY')")
+@NamedNativeQuery(name = BASIC_SELLERS_BY_NAME_QUERY,
+        query = SELECT_BASIC_FIELDS + "WHERE deleted <> 1 AND role IN ('SELLER','COMPANY') AND " + NAME_FIELDS_QUERY,
+        resultSetMapping = "BasicUserMapping")
+@NamedNativeQuery(name = BASIC_SELLERS_BY_NAME_QUERY + ".count", resultSetMapping = "CountMapping",
+        query = "SELECT count(*) FROM users WHERE deleted <> 1 AND role IN ('SELLER','COMPANY') AND " + NAME_FIELDS_QUERY)
+@NamedNativeQuery(name = BASIC_SELLERS_BY_EMAIL_QUERY,
+        query = SELECT_BASIC_FIELDS + "WHERE deleted <> 1 AND role IN ('SELLER','COMPANY') AND email like LOWER(CONCAT('%',?1,'%'))",
+        resultSetMapping = "BasicUserMapping")
+@NamedNativeQuery(name = BASIC_SELLERS_BY_EMAIL_QUERY + ".count", resultSetMapping = "CountMapping",
+        query = "SELECT count(*) FROM users WHERE deleted <> 1 AND role IN ('SELLER','COMPANY') AND email like LOWER(CONCAT('%',?1,'%'))")
 @Entity
 @Table(name = "USERS")
 public class User extends BaseEntity implements UserDetails, Serializable {
 
     private static final String PREFIX = "USER.";
     public static final String BASIC_USERS_IN_LIST = PREFIX + "BasicUsersInList";
+    public static final String BASIC_USERS_ALL = PREFIX + "BasicUsersAll";
+    public static final String BASIC_USERS_BY_NAME_QUERY = PREFIX + "BasicUsersByQuery";
+    public static final String BASIC_USERS_BY_EMAIL_QUERY = PREFIX + "BasicUsersByEmail";
+    public static final String BASIC_SELLERS_ALL = PREFIX + "BasicSellersAll";
+    public static final String BASIC_SELLERS_BY_NAME_QUERY = PREFIX + "BasicSellersByQuery";
+    public static final String BASIC_SELLERS_BY_EMAIL_QUERY = PREFIX + "BasicSellersByEmail";
+
+    static final String SELECT_BASIC_FIELDS = "SELECT id, username, firstname, lastname, profile_photo, role  FROM users u ";
+    static final String NAME_FIELDS_QUERY = "(LOWER(CONCAT(firstname, ' ', lastname)) LIKE LOWER(CONCAT('%',?1,'%')) OR LOWER(username) LIKE LOWER(CONCAT('%',?1,'%')))";
 
     @NotNull
     private String firstname;
     @NotNull
     private String lastname;
-    @Email @NotNull
+    @Email
+    @NotNull
     private String email;
     @NotNull
     @Column(unique = true)

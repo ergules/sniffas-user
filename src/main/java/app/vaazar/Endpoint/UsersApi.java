@@ -151,12 +151,12 @@ public class UsersApi {
         if (!userId.equals(loggedUser.getId()) ||
                 !sellerRequestDto.getUser().getId().equals(userId))
             throw new AccessDeniedException("logged userId do not match with target");
-        return ResponseEntity.ok(userService.requestSellerApproval(sellerRequestDto));
+        return ResponseEntity.ok(approvalService.requestSellerApproval(sellerRequestDto));
     }
 
     @GetMapping("/seller-requests/{approvalId}")
     public Approval getSellerApproval(@PathVariable Long userId, @PathVariable Long approvalId) {
-        Approval approval = userService.getApproval(approvalId);
+        Approval approval = approvalService.getApproval(approvalId);
         if (approval.getRequester().getId().equals(userId))
             return approval;
         else
