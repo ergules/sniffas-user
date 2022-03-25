@@ -3,12 +3,14 @@ package app.vaazar.Domain.Approval.Entity;
 import app.vaazar.Domain.BaseEntity.BaseEntity;
 import app.vaazar.Domain.BaseEntity.IdSerializer;
 import app.vaazar.Domain.User.Entity.User;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 import javax.persistence.*;
 
 @Entity
 @Table(name = "APPROVALS")
+@JsonIgnoreProperties(value = {"deleted", "version"})
 public class Approval extends BaseEntity {
 
     @ManyToOne

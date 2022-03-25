@@ -3,14 +3,13 @@ package app.vaazar.Domain.BaseEntity;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import javax.persistence.*;
-import java.lang.Long;
 import java.io.Serializable;
 import java.time.Instant;
 
 @MappedSuperclass
-@EntityListeners(value  = {BaseEntityInsertUpdateListener.class})
-@JsonIgnoreProperties(value = {"createdAt","updatedBy","updatedAt"})
-public abstract class BaseEntity implements Serializable  {
+@EntityListeners(value = {BaseEntityInsertUpdateListener.class})
+@JsonIgnoreProperties(value = {"createdAt", "updatedBy", "updatedAt", "version"})
+public abstract class BaseEntity implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
