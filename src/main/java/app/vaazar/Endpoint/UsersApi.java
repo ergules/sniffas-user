@@ -55,6 +55,16 @@ public class UsersApi {
         return userService.updateUserInfo(user);
     }
 
+    @DeleteMapping
+    public ResponseEntity<?> deleteUser(@PathVariable Long userId,
+                                        UsernamePasswordAuthenticationToken contextUser) {
+        User loggedUser = (User) contextUser.getPrincipal();
+        if (!userId.equals(loggedUser.getId()))
+            throw new AccessDeniedException("logged userId do not match with target");
+
+        return ResponseEntity.ok(userService.deleteUser(userId));
+    }
+
     @PostMapping("/addresses")
     public Address addAddressToUser(@PathVariable Long userId,
                                     @Valid @RequestBody Address address,
@@ -165,8 +175,8 @@ public class UsersApi {
 
     @GetMapping("/upload-link")
     public String getPresignedLink(@PathVariable Long userId,
-                                    @RequestParam UploadType type,
-                                    UsernamePasswordAuthenticationToken contextUser) {
+                                   @RequestParam UploadType type,
+                                   UsernamePasswordAuthenticationToken contextUser) {
         User loggedUser = (User) contextUser.getPrincipal();
         if (!userId.equals(loggedUser.getId()))
             throw new AccessDeniedException("logged userId do not match with target");

@@ -10,6 +10,8 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.context.request.WebRequest;
 
+import java.util.NoSuchElementException;
+
 @ControllerAdvice
 public class ApiExceptionHandler {
 
@@ -25,6 +27,12 @@ public class ApiExceptionHandler {
     public ResponseEntity<ErrorDetails> handleIllegalStateException(Exception e, WebRequest req) {
         log.error(e.getLocalizedMessage());
         return new ResponseEntity<>(new ErrorDetails(e, req), HttpStatus.NOT_ACCEPTABLE);
+    }
+
+    @ExceptionHandler({NoSuchElementException.class})
+    public ResponseEntity<ErrorDetails> handleNoSuchElementException(Exception e, WebRequest req) {
+        log.error(e.getLocalizedMessage());
+        return new ResponseEntity<>(new ErrorDetails(e, req), HttpStatus.NOT_FOUND);
     }
 
     @ExceptionHandler(Exception.class)

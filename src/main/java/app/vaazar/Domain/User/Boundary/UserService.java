@@ -1,6 +1,8 @@
 package app.vaazar.Domain.User.Boundary;
 
 import app.vaazar.Domain.Company.Boundary.CompanyService;
+import app.vaazar.Domain.DeleteAccount.Boundary.DeleteAccountService;
+import app.vaazar.Domain.DeleteAccount.Entity.DeleteAccountRequest;
 import app.vaazar.Domain.User.Control.UserRepository;
 import app.vaazar.Domain.User.Entity.Role;
 import app.vaazar.Domain.User.Entity.User;
@@ -15,6 +17,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.regex.Pattern;
 
@@ -25,6 +28,7 @@ public class UserService {
     private final UserRepository userRepo;
     private final CompanyService companyService;
     private final FirebaseAuthService firebaseAuthService;
+    private final DeleteAccountService deleteAccountService;
     private final Pattern emailQueryPattern = Pattern.compile("[A-Z0-9._%+-]+@[A-Z0-9.-]+", Pattern.CASE_INSENSITIVE);
 
     public User findById(Long id) {
@@ -45,6 +49,8 @@ public class UserService {
 
     public User updateUserInfo(User user) throws FirebaseAuthException {
         User toUpdate = userRepo.findById(user.getId()).orElseThrow();
+        if (toUpdate.getDeleted())
+            throw new NoSuchElementException("User does not exist or may be deleted");
         toUpdate.updateBaseFields(user);
         UserRecord firebaseRecord = null;
         if (!toUpdate.getEmail().equalsIgnoreCase(user.getEmail())) {
@@ -77,6 +83,20 @@ public class UserService {
         return saveUser(user);
     }
 
+    public DeleteAccountRequest deleteUser(Long userId) {
+        User user = userRepo.findById(userId).orElseThrow();
+        if (user.getDeleted())
+            return null;
+        if (user.getRole() == Role.USER) {
+            user.setDeleted(true);
+            userRepo.save(user);
+        }
+        if (user.getRole() == Role.SELLER || user.getRole() == Role.COMPANY) {
+            return deleteAccountService.requestToDeleteAccount(user);
+        }
+        return null;
+    }
+
     public Optional<User> findByUid(String uid) {
         return userRepo.findByFirebaseUid(uid);
     }
@@ -99,9 +119,10 @@ public class UserService {
         }
     }
 
-    public UserService(UserRepository userRepo, CompanyService companyService, FirebaseAuthService firebaseAuthService) {
+    public UserService(UserRepository userRepo, CompanyService companyService, FirebaseAuthService firebaseAuthService, DeleteAccountService deleteAccountService) {
         this.userRepo = userRepo;
         this.companyService = companyService;
         this.firebaseAuthService = firebaseAuthService;
+        this.deleteAccountService = deleteAccountService;
     }
 }
