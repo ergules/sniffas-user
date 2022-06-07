@@ -1,6 +1,6 @@
 package app.vaazar.config;
 
-import app.vaazar.Security.JwtTokenFilter;
+import app.vaazar.security.JwtTokenFilter;
 import org.slf4j.Logger;
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
