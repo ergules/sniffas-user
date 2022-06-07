@@ -3,6 +3,7 @@ package app.vaazar.domain.user.boundary;
 import app.vaazar.domain.company.boundary.CompanyService;
 import app.vaazar.domain.deleteAccount.boundary.DeleteAccountService;
 import app.vaazar.domain.deleteAccount.entity.DeleteAccountRequest;
+import app.vaazar.domain.event.entity.UserCreatedEvent;
 import app.vaazar.domain.user.control.UserRepository;
 import app.vaazar.domain.user.entity.Role;
 import app.vaazar.domain.user.entity.User;
@@ -11,6 +12,7 @@ import app.vaazar.service.firebase.FirebaseAuthService;
 import com.google.firebase.auth.FirebaseAuthException;
 import com.google.firebase.auth.FirebaseToken;
 import com.google.firebase.auth.UserRecord;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -29,6 +31,7 @@ public class UserService {
     private final CompanyService companyService;
     private final FirebaseAuthService firebaseAuthService;
     private final DeleteAccountService deleteAccountService;
+    private final ApplicationEventPublisher eventPublisher;
     private final Pattern emailQueryPattern = Pattern.compile("[A-Z0-9._%+-]+@[A-Z0-9.-]+", Pattern.CASE_INSENSITIVE);
 
     public User findById(Long id) {
@@ -80,7 +83,9 @@ public class UserService {
             UserRecord firebaseRecord = firebaseAuthService.getFirebaseRecord(token.getUid());
             user.setMobilePhone(firebaseRecord.getPhoneNumber());
         } // trust the record on firebase
-        return saveUser(user);
+        User persisted = saveUser(user);
+        eventPublisher.publishEvent(new UserCreatedEvent(persisted));
+        return persisted;
     }
 
     public DeleteAccountRequest deleteUser(Long userId) {
@@ -119,10 +124,11 @@ public class UserService {
         }
     }
 
-    public UserService(UserRepository userRepo, CompanyService companyService, FirebaseAuthService firebaseAuthService, DeleteAccountService deleteAccountService) {
+    public UserService(UserRepository userRepo, CompanyService companyService, FirebaseAuthService firebaseAuthService, DeleteAccountService deleteAccountService, ApplicationEventPublisher eventPublisher) {
         this.userRepo = userRepo;
         this.companyService = companyService;
         this.firebaseAuthService = firebaseAuthService;
         this.deleteAccountService = deleteAccountService;
+        this.eventPublisher = eventPublisher;
     }
 }

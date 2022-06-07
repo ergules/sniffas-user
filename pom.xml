@@ -69,6 +69,12 @@
 			<artifactId>springdoc-openapi-ui</artifactId>
 			<version>1.5.11</version>
 		</dependency>
+		<!-- Rabbit MQ -->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-amqp</artifactId>
+		</dependency>
+
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-test</artifactId>

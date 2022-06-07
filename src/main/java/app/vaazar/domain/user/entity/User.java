@@ -135,6 +135,15 @@ public class User extends BaseEntity implements UserDetails, Serializable {
     public User() {
     }
 
+    public User(Long id, String email, String username, Role role) {
+        setId(id);
+        this.email = email;
+        this.username = username;
+        SimpleGrantedAuthority authority = new SimpleGrantedAuthority(role.name());
+        authorities = Set.of(authority);
+        language = SupportedLanguage.EN;
+    }
+
     @Override
     public String toString() {
         return "User{" +
