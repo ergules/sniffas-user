@@ -37,6 +37,7 @@ public class RabbitService implements NotificationSender {
 
         defaultDirectExchange = new DirectExchange("amq.direct");
         Queue notificationQueue = new Queue("notification", true);
+        rabbitAdmin.declareQueue(notificationQueue);
         rabbitAdmin.declareBinding(BindingBuilder
                 .bind(notificationQueue)
                 .to(defaultDirectExchange)
