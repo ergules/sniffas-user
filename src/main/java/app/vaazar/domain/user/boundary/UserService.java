@@ -55,6 +55,7 @@ public class UserService {
         if (toUpdate.getDeleted())
             throw new NoSuchElementException("User does not exist or may be deleted");
         toUpdate.updateBaseFields(user);
+        toUpdate.updateSellerFields(user);
         UserRecord firebaseRecord = null;
         if (!toUpdate.getEmail().equalsIgnoreCase(user.getEmail())) {
             firebaseRecord = firebaseAuthService.getFirebaseRecord(toUpdate.getFirebaseUid());
