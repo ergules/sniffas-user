@@ -10,6 +10,7 @@ import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
 
 import javax.persistence.*;
+import javax.validation.constraints.Size;
 import java.util.Set;
 
 @Entity
@@ -18,6 +19,8 @@ public class Company extends BaseEntity {
 
     private String companyName;
     private String website;
+    @Size(min = 11, max = 11)
+    private String taxId;
     private String tradeRegistry;   // file
     private String taxRegistry;     // file
     private String IBAN;
@@ -43,7 +46,7 @@ public class Company extends BaseEntity {
     private User user;
 
     public boolean checkForRequiredFields() {
-        return ObjectUtils.allNotNull(companyName, tradeRegistry, taxRegistry, address, companyType,
+        return ObjectUtils.allNotNull(companyName, taxId, tradeRegistry, taxRegistry, address, companyType,
                 companyExecutiveFirstName, companyExecutiveLastName, companyExecutiveIdentity);
     }
 
@@ -73,6 +76,14 @@ public class Company extends BaseEntity {
 
     public void setWebsite(String website) {
         this.website = website;
+    }
+
+    public String getTaxId() {
+        return taxId;
+    }
+
+    public void setTaxId(String taxId) {
+        this.taxId = taxId;
     }
 
     public String getTradeRegistry() {
