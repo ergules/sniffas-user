@@ -12,9 +12,16 @@ import app.vaazar.domain.upload.entity.UploadType;
 import app.vaazar.domain.user.boundary.UserService;
 import app.vaazar.domain.user.entity.User;
 import app.vaazar.endpoint.dto.SellerRequestDto;
+import app.vaazar.endpoint.dto.address.AddressDTO;
+import app.vaazar.endpoint.dto.approval.ApprovalDTO;
+import app.vaazar.endpoint.dto.company.CompanyDTO;
+import app.vaazar.endpoint.dto.company.ShareholderDTO;
+import app.vaazar.endpoint.dto.user.UserDTO;
 import app.vaazar.service.FileStorage;
 import com.google.firebase.auth.FirebaseAuthException;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import org.modelmapper.ModelMapper;
+import org.modelmapper.TypeToken;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -36,23 +43,28 @@ public class UsersApi {
     private final FileStorage fileStorage;
     private final ApprovalService approvalService;
 
+    private final ModelMapper modelMapper;
+
     @GetMapping
-    public User getUser(@PathVariable Long userId,
-                        UsernamePasswordAuthenticationToken contextUser) {
+    public UserDTO getUser(@PathVariable Long userId,
+                           UsernamePasswordAuthenticationToken contextUser) {
         User loggedUser = (User) contextUser.getPrincipal();
         if (!userId.equals(loggedUser.getId()))
             throw new AccessDeniedException("logged userId do not match with target");
-        return userService.findById(userId);
+        User found = userService.findById(userId);
+        if (found == null) return null;
+        return modelMapper.map(found, UserDTO.class);
     }
 
     @PutMapping
-    public User updateUser(@PathVariable Long userId,
-                           @Valid @RequestBody User user,
-                           UsernamePasswordAuthenticationToken contextUser) throws FirebaseAuthException {
+    public UserDTO updateUser(@PathVariable Long userId,
+                              @Valid @RequestBody UserDTO userDTO,
+                              UsernamePasswordAuthenticationToken contextUser) throws FirebaseAuthException {
         User loggedUser = (User) contextUser.getPrincipal();
-        if (!userId.equals(loggedUser.getId()) || user.getId() != null && !userId.equals(user.getId()))
+        if (!userId.equals(loggedUser.getId()) || userDTO.getId() != null && !userId.equals(userDTO.getId()))
             throw new AccessDeniedException("logged userId do not match with target");
-        return userService.updateUserInfo(user);
+        User updated = userService.updateUserInfo(modelMapper.map(userDTO, User.class));
+        return modelMapper.map(updated, UserDTO.class);
     }
 
     @DeleteMapping
@@ -66,25 +78,30 @@ public class UsersApi {
     }
 
     @PostMapping("/addresses")
-    public Address addAddressToUser(@PathVariable Long userId,
-                                    @Valid @RequestBody Address address,
+    public AddressDTO addAddressToUser(@PathVariable Long userId,
+                                       @Valid @RequestBody AddressDTO addressDTO,
+                                       UsernamePasswordAuthenticationToken contextUser) {
+        User loggedUser = (User) contextUser.getPrincipal();
+        if (!userId.equals(loggedUser.getId()))
+            throw new AccessDeniedException("logged userId do not match with target");
+        Address newAddress = modelMapper.map(addressDTO, Address.class);
+        Address persisted = addressService.addAddressToUser(newAddress, userId);
+        return modelMapper.map(persisted, AddressDTO.class);
+    }
+
+    @PutMapping("/addresses/{addressId}")
+    public AddressDTO updateAddress(@PathVariable Long userId,
+                                    @PathVariable Long addressId,
+                                    @Valid @RequestBody AddressDTO addressDTO,
                                     UsernamePasswordAuthenticationToken contextUser) {
         User loggedUser = (User) contextUser.getPrincipal();
         if (!userId.equals(loggedUser.getId()))
             throw new AccessDeniedException("logged userId do not match with target");
-        return addressService.addAddressToUser(address, userId);
-    }
+        addressDTO.setId(addressId);
 
-    @PutMapping("/addresses/{addressId}")
-    public Address updateAddress(@PathVariable Long userId,
-                                 @PathVariable Long addressId,
-                                 @Valid @RequestBody Address address,
-                                 UsernamePasswordAuthenticationToken contextUser) {
-        User loggedUser = (User) contextUser.getPrincipal();
-        if (!userId.equals(loggedUser.getId()))
-            throw new AccessDeniedException("logged userId do not match with target");
-        address.setId(addressId);
-        return addressService.updateAddress(address, userId);
+        Address toBeUpdated = modelMapper.map(addressDTO, Address.class);
+        Address merged = addressService.updateAddress(toBeUpdated, userId);
+        return modelMapper.map(merged, AddressDTO.class);
     }
 
     @DeleteMapping("/addresses/{addressId}")
@@ -100,37 +117,45 @@ public class UsersApi {
     }
 
     @PutMapping("/companies/{companyId}")
-    public Company updateCompanyInfo(@PathVariable Long userId,
-                                     @PathVariable Long companyId,
-                                     @Valid @RequestBody Company company,
-                                     UsernamePasswordAuthenticationToken contextUser) {
+    public CompanyDTO updateCompanyInfo(@PathVariable Long userId,
+                                        @PathVariable Long companyId,
+                                        @Valid @RequestBody CompanyDTO companyDTO,
+                                        UsernamePasswordAuthenticationToken contextUser) {
         User loggedUser = (User) contextUser.getPrincipal();
         if (!userId.equals(loggedUser.getId()))
             throw new AccessDeniedException("logged userId do not match with target");
-        company.setId(companyId);
-        return companyService.updateCompany(company, userId);
+        companyDTO.setId(companyId);
+
+        Company company = modelMapper.map(companyDTO, Company.class);
+        Company merged = companyService.updateCompany(company, userId);
+        return modelMapper.map(merged, CompanyDTO.class);
     }
 
     @PostMapping("/share-holders")
-    public ShareHolder createShareHolder(@PathVariable Long userId,
-                                         @Valid @RequestBody ShareHolder shareHolder,
-                                         UsernamePasswordAuthenticationToken contextUser) {
+    public ShareholderDTO createShareHolder(@PathVariable Long userId,
+                                            @Valid @RequestBody ShareholderDTO shareholderDTO,
+                                            UsernamePasswordAuthenticationToken contextUser) {
         User loggedUser = (User) contextUser.getPrincipal();
         if (!userId.equals(loggedUser.getId()))
             throw new AccessDeniedException("logged userId do not match with target");
-        return companyService.createShareHolder(shareHolder, userId);
+        ShareHolder newShareholder = modelMapper.map(shareholderDTO, ShareHolder.class);
+        ShareHolder persisted = companyService.createShareHolder(newShareholder, userId);
+        return modelMapper.map(persisted, ShareholderDTO.class);
     }
 
     @PutMapping("/share-holders/{shareHolderId}")
-    public ShareHolder updateShareHolder(@PathVariable Long userId,
-                                         @PathVariable Long shareHolderId,
-                                         @Valid @RequestBody ShareHolder shareHolder,
-                                         UsernamePasswordAuthenticationToken contextUser) {
+    public ShareholderDTO updateShareHolder(@PathVariable Long userId,
+                                            @PathVariable Long shareHolderId,
+                                            @Valid @RequestBody ShareholderDTO shareholderDTO,
+                                            UsernamePasswordAuthenticationToken contextUser) {
         User loggedUser = (User) contextUser.getPrincipal();
         if (!userId.equals(loggedUser.getId()))
             throw new AccessDeniedException("logged userId do not match with target");
-        shareHolder.setId(shareHolderId);
-        return companyService.updateShareHolder(shareHolder, userId);
+        shareholderDTO.setId(shareHolderId);
+
+        ShareHolder toBeUpdated = modelMapper.map(shareholderDTO, ShareHolder.class);
+        ShareHolder merged = companyService.updateShareHolder(toBeUpdated, userId);
+        return modelMapper.map(merged, ShareholderDTO.class);
     }
 
     @DeleteMapping("/share-holders/{shareHolderId}")
@@ -145,30 +170,36 @@ public class UsersApi {
     }
 
     @GetMapping("/seller-requests")
-    public ResponseEntity<List<Approval>> getSellerApprovals(@PathVariable Long userId,
-                                                             UsernamePasswordAuthenticationToken contextUser) {
+    public ResponseEntity<List<ApprovalDTO>> getSellerApprovals(@PathVariable Long userId,
+                                                                UsernamePasswordAuthenticationToken contextUser) {
         User loggedUser = (User) contextUser.getPrincipal();
         if (!userId.equals(loggedUser.getId()))
             throw new AccessDeniedException("logged userId do not match with target");
-        return ResponseEntity.ok(approvalService.getApprovalsOfUser(userId));
+        List<ApprovalDTO> dtoList = modelMapper.map(approvalService.getApprovalsOfUser(userId),
+                new TypeToken<List<ApprovalDTO>>() {
+                }.getType());
+        return ResponseEntity.ok(dtoList);
     }
 
     @PostMapping("/seller-requests")
-    public ResponseEntity<Approval> requestSellerApproval(@PathVariable Long userId,
-                                                          @Valid @RequestBody SellerRequestDto sellerRequestDto,
-                                                          UsernamePasswordAuthenticationToken contextUser) {
+    public ResponseEntity<ApprovalDTO> requestSellerApproval(@PathVariable Long userId,
+                                                             @Valid @RequestBody SellerRequestDto sellerRequestDto,
+                                                             UsernamePasswordAuthenticationToken contextUser) {
         User loggedUser = (User) contextUser.getPrincipal();
         if (!userId.equals(loggedUser.getId()) ||
                 !sellerRequestDto.getUser().getId().equals(userId))
             throw new AccessDeniedException("logged userId do not match with target");
-        return ResponseEntity.ok(approvalService.requestSellerApproval(sellerRequestDto));
+        User requester = modelMapper.map(sellerRequestDto.getUser(), User.class);
+        Approval approval = approvalService
+                .requestSellerApproval(sellerRequestDto.getApplicationType(), requester);
+        return ResponseEntity.ok(modelMapper.map(approval, ApprovalDTO.class));
     }
 
     @GetMapping("/seller-requests/{approvalId}")
-    public Approval getSellerApproval(@PathVariable Long userId, @PathVariable Long approvalId) {
+    public ApprovalDTO getSellerApproval(@PathVariable Long userId, @PathVariable Long approvalId) {
         Approval approval = approvalService.getApproval(approvalId);
         if (approval.getRequester().getId().equals(userId))
-            return approval;
+            return modelMapper.map(approval, ApprovalDTO.class);
         else
             throw new AccessDeniedException("request belongs an other user");
     }
@@ -184,11 +215,15 @@ public class UsersApi {
         return fileStorage.preSignWithObjectKey(uploadName, type);
     }
 
-    public UsersApi(UserService userService, CompanyService companyService, AddressService addressService, FileStorage fileStorage, ApprovalService approvalService) {
+    public UsersApi(UserService userService, CompanyService companyService,
+                    AddressService addressService,
+                    FileStorage fileStorage, ApprovalService approvalService,
+                    ModelMapper modelMapper) {
         this.userService = userService;
         this.companyService = companyService;
         this.addressService = addressService;
         this.fileStorage = fileStorage;
         this.approvalService = approvalService;
+        this.modelMapper = modelMapper;
     }
 }

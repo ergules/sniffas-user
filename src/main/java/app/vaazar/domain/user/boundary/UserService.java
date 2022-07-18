@@ -1,6 +1,5 @@
 package app.vaazar.domain.user.boundary;
 
-import app.vaazar.domain.company.boundary.CompanyService;
 import app.vaazar.domain.deleteAccount.boundary.DeleteAccountService;
 import app.vaazar.domain.deleteAccount.entity.DeleteAccountRequest;
 import app.vaazar.domain.event.entity.UserCreatedEvent;
@@ -28,7 +27,6 @@ import java.util.regex.Pattern;
 public class UserService {
 
     private final UserRepository userRepo;
-    private final CompanyService companyService;
     private final FirebaseAuthService firebaseAuthService;
     private final DeleteAccountService deleteAccountService;
     private final ApplicationEventPublisher eventPublisher;
@@ -125,9 +123,8 @@ public class UserService {
         }
     }
 
-    public UserService(UserRepository userRepo, CompanyService companyService, FirebaseAuthService firebaseAuthService, DeleteAccountService deleteAccountService, ApplicationEventPublisher eventPublisher) {
+    public UserService(UserRepository userRepo, FirebaseAuthService firebaseAuthService, DeleteAccountService deleteAccountService, ApplicationEventPublisher eventPublisher) {
         this.userRepo = userRepo;
-        this.companyService = companyService;
         this.firebaseAuthService = firebaseAuthService;
         this.deleteAccountService = deleteAccountService;
         this.eventPublisher = eventPublisher;

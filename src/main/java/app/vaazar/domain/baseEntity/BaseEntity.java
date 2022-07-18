@@ -15,8 +15,8 @@ public abstract class BaseEntity implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private Long createdBy;
-    private Instant createdAt;
+    Long createdBy;
+    Instant createdAt;
     private Long updatedBy;
     private Instant updatedAt;
     private Boolean deleted = false;
@@ -37,7 +37,7 @@ public abstract class BaseEntity implements Serializable {
         return id;
     }
 
-    public void setId(java.lang.Long id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
@@ -46,6 +46,7 @@ public abstract class BaseEntity implements Serializable {
     }
 
     public void setCreatedBy(Long createdBy) {
+        if (this.createdBy != null) return;
         this.createdBy = createdBy;
     }
 
@@ -54,6 +55,7 @@ public abstract class BaseEntity implements Serializable {
     }
 
     public void setCreatedAt(Instant createdAt) {
+        if (this.createdAt != null) return;
         this.createdAt = createdAt;
     }
 
@@ -78,6 +80,7 @@ public abstract class BaseEntity implements Serializable {
     }
 
     public void setDeleted(Boolean deleted) {
+        if (deleted == null) return;
         this.deleted = deleted;
     }
 }

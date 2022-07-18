@@ -17,8 +17,8 @@ public class BaseEntityInsertUpdateListener {
     @PrePersist
     public void preCreate(BaseEntity baseEntity) {
         try {
-            baseEntity.setCreatedBy(userId());
-            baseEntity.setCreatedAt(Instant.now());
+            baseEntity.createdBy = userId();
+            baseEntity.createdAt = Instant.now();
         } catch (Exception e) {
             log.error("preCreate error for class " + baseEntity.getClass().getSimpleName(), e);
         }
@@ -34,7 +34,8 @@ public class BaseEntityInsertUpdateListener {
     private Long userId() {
         try {
             return ((User) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getId();
-        } catch (Exception ignore) {}
+        } catch (Exception ignore) {
+        }
         return null;
     }
 }

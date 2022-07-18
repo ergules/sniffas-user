@@ -9,7 +9,6 @@ import app.vaazar.domain.company.entity.Company;
 import app.vaazar.domain.user.boundary.UserService;
 import app.vaazar.domain.user.entity.Role;
 import app.vaazar.domain.user.entity.User;
-import app.vaazar.endpoint.dto.SellerRequestDto;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -37,40 +36,40 @@ public class ApprovalService {
         return approvalRepo.findByApprovalStatus(status.orElse(ApprovalStatus.PENDING));
     }
 
-    public Approval requestSellerApproval(SellerRequestDto requestDto) {
-        User user = userService.findById(requestDto.getUser().getId());
-        List<Approval> approvals = approvalRepo.findByRequesterId(user.getId());
+    public Approval requestSellerApproval(ApplicationType applicationType, User requester) {
+        User persistedUser = userService.findById(requester.getId());
+        List<Approval> approvals = approvalRepo.findByRequesterId(persistedUser.getId());
         if (approvals.stream().anyMatch(Approval::isPending))
             throw new IllegalStateException("there is an ongoing process");
-        switch (requestDto.getApplicationType()) {
+        switch (applicationType) {
             case PRIVATE:
-                user.updateBaseFields(requestDto.getUser());
-                user.updateSellerFields(requestDto.getUser());
-                if (!user.checkSellerInfo())
+                persistedUser.updateBaseFields(requester);
+                persistedUser.updateSellerFields(requester);
+                if (!persistedUser.checkSellerInfo())
                     throw new IllegalStateException("missing required fields");
-                else if (user.getRole().equals(Role.SELLER))
+                else if (persistedUser.getRole().equals(Role.SELLER))
                     throw new IllegalStateException("already approved");
-                userService.saveUser(user);
+                userService.saveUser(persistedUser);
                 break;
             case COMPANY:
-                if (user.getCompany() == null) {
-                    user.updateBaseFields(requestDto.getUser());
-                    user.updateSellerFields(requestDto.getUser());
-                    Company company = requestDto.getUser().getCompany();
-                    company.setUser(user);
-                    user.setCompany(company);
+                if (persistedUser.getCompany() == null) {
+                    persistedUser.updateBaseFields(requester);
+                    persistedUser.updateSellerFields(requester);
+                    Company company = requester.getCompany();
+                    company.setUser(persistedUser);
+                    persistedUser.setCompany(company);
                     companyService.saveCompany(company);
-                    userService.saveUser(user);
+                    userService.saveUser(persistedUser);
                 } // if company not null, updates must be made with via crud methods
-                if (!user.checkCompanyInfo())
+                if (!persistedUser.checkCompanyInfo())
                     throw new IllegalStateException("missing required fields");
-                else if (user.getRole().equals(Role.COMPANY))
+                else if (persistedUser.getRole().equals(Role.COMPANY))
                     throw new IllegalStateException("already approved");
         }
 
         Approval approval = new Approval();
-        approval.setRequester(user);
-        approval.setApplicationType(requestDto.getApplicationType());
+        approval.setRequester(persistedUser);
+        approval.setApplicationType(applicationType);
         approval.setApprovalStatus(ApprovalStatus.PENDING);
         return approvalRepo.save(approval);
     }
