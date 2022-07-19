@@ -1,6 +1,6 @@
 package app.vaazar.domain.user.entity;
 
-import app.vaazar.domain.address.Entity.Address;
+import app.vaazar.domain.address.entity.Address;
 import app.vaazar.domain.baseEntity.BaseEntity;
 import app.vaazar.domain.company.entity.Company;
 import app.vaazar.domain.i18n.SupportedLanguage;
@@ -230,6 +230,7 @@ public class User extends BaseEntity implements UserDetails, Serializable {
     }
 
     public void setRole(Role role) {
+        if (role == null) return;
         this.role = role;
         postLoadUser();
     }

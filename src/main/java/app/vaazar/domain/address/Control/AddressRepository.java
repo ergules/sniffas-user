@@ -1,6 +1,6 @@
-package app.vaazar.domain.address.Control;
+package app.vaazar.domain.address.control;
 
-import app.vaazar.domain.address.Entity.Address;
+import app.vaazar.domain.address.entity.Address;
 import org.springframework.data.repository.CrudRepository;
 
 import java.util.List;

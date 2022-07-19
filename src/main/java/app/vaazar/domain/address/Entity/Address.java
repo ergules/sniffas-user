@@ -1,4 +1,4 @@
-package app.vaazar.domain.address.Entity;
+package app.vaazar.domain.address.entity;
 
 import app.vaazar.domain.baseEntity.BaseEntity;
 import app.vaazar.domain.baseEntity.IdSerializer;
@@ -128,5 +128,13 @@ public class Address extends BaseEntity {
 
     public void setUser(User user) {
         this.user = user;
+    }
+
+    public Company getCompany() {
+        return company;
+    }
+
+    public void setCompany(Company company) {
+        this.company = company;
     }
 }

@@ -1,7 +1,8 @@
 package app.vaazar.endpoint;
 
-import app.vaazar.domain.address.Boundary.AddressService;
-import app.vaazar.domain.address.Entity.Address;
+import app.vaazar.config.exception.AuthorisationException;
+import app.vaazar.domain.address.boundary.AddressService;
+import app.vaazar.domain.address.entity.Address;
 import app.vaazar.domain.approval.boundary.ApprovalService;
 import app.vaazar.domain.approval.entity.Approval;
 import app.vaazar.domain.company.boundary.CompanyService;
@@ -18,7 +19,6 @@ import app.vaazar.endpoint.dto.company.CompanyDTO;
 import app.vaazar.endpoint.dto.company.ShareholderDTO;
 import app.vaazar.endpoint.dto.user.UserDTO;
 import app.vaazar.service.FileStorage;
-import com.google.firebase.auth.FirebaseAuthException;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
@@ -59,7 +59,7 @@ public class UsersApi {
     @PutMapping
     public UserDTO updateUser(@PathVariable Long userId,
                               @Valid @RequestBody UserDTO userDTO,
-                              UsernamePasswordAuthenticationToken contextUser) throws FirebaseAuthException {
+                              UsernamePasswordAuthenticationToken contextUser) throws AuthorisationException {
         User loggedUser = (User) contextUser.getPrincipal();
         if (!userId.equals(loggedUser.getId()) || userDTO.getId() != null && !userId.equals(userDTO.getId()))
             throw new AccessDeniedException("logged userId do not match with target");

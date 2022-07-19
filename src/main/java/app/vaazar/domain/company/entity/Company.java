@@ -1,6 +1,6 @@
 package app.vaazar.domain.company.entity;
 
-import app.vaazar.domain.address.Entity.Address;
+import app.vaazar.domain.address.entity.Address;
 import app.vaazar.domain.baseEntity.BaseEntity;
 import app.vaazar.domain.baseEntity.IdSerializer;
 import app.vaazar.domain.user.entity.User;

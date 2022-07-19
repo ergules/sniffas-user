@@ -1,5 +1,6 @@
 package app.vaazar.service.firebase;
 
+import app.vaazar.config.exception.AuthorisationException;
 import com.google.auth.oauth2.GoogleCredentials;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.FirebaseOptions;
@@ -23,12 +24,20 @@ public class FirebaseAuthService {
 
     FirebaseAuth auth;
 
-    public FirebaseToken verifyIdToken(String token) throws FirebaseAuthException {
-        return auth.verifyIdToken(token);
+    public FirebaseToken verifyIdToken(String token) throws AuthorisationException {
+        try {
+            return auth.verifyIdToken(token);
+        } catch (FirebaseAuthException e) {
+            throw new AuthorisationException(e.getMessage());
+        }
     }
 
-    public UserRecord getFirebaseRecord(String uid) throws FirebaseAuthException {
-        return auth.getUser(uid);
+    public UserRecord getFirebaseRecord(String uid) throws AuthorisationException {
+        try {
+            return auth.getUser(uid);
+        } catch (FirebaseAuthException e) {
+            throw new AuthorisationException(e.getMessage());
+        }
     }
 
     @PostConstruct

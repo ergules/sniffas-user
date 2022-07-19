@@ -1,5 +1,6 @@
 package app.vaazar.endpoint;
 
+import app.vaazar.config.exception.AuthorisationException;
 import app.vaazar.domain.user.boundary.UserService;
 import app.vaazar.domain.user.entity.User;
 import app.vaazar.endpoint.dto.BasicUser;
@@ -7,7 +8,6 @@ import app.vaazar.endpoint.dto.RegistrationDto;
 import app.vaazar.endpoint.dto.user.UserDTO;
 import app.vaazar.security.JwtTokenUtil;
 import app.vaazar.service.firebase.FirebaseAuthService;
-import com.google.firebase.auth.FirebaseAuthException;
 import com.google.firebase.auth.FirebaseToken;
 import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
@@ -42,7 +42,7 @@ public class PublicApi {
                     .header(HttpHeaders.AUTHORIZATION, jwtTokenUtil.generateAccessToken(user))
                     .body(dto);
 
-        } catch (FirebaseAuthException fae) {
+        } catch (AuthorisationException fae) {
             throw new AccessDeniedException("token is invalid");
         } catch (NoSuchElementException nse) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
@@ -50,7 +50,8 @@ public class PublicApi {
     }
 
     @PostMapping("/register")
-    public UserDTO registerWithFirebaseToken(@RequestBody @Valid RegistrationDto registrationDto) throws FirebaseAuthException {
+    public UserDTO registerWithFirebaseToken(@RequestBody @Valid RegistrationDto registrationDto)
+            throws AuthorisationException {
         FirebaseToken firebaseToken = firebaseService.verifyIdToken(registrationDto.getToken());
         User user = modelMapper.map(registrationDto.getUser(), User.class);
         User persisted = userService.registerUser(user, firebaseToken);
