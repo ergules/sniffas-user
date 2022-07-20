@@ -1,0 +1,198 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.1.xsd">
+    <changeSet author="merg (generated)" id="1658329728404-1">
+        <createTable tableName="addresses">
+            <column autoIncrement="true" name="id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="created_at" type="datetime"/>
+            <column name="created_by" type="BIGINT"/>
+            <column name="deleted" type="BIT(1)"/>
+            <column name="updated_at" type="datetime"/>
+            <column name="updated_by" type="BIGINT"/>
+            <column name="version" type="INT"/>
+            <column name="address_string" type="VARCHAR(255)"/>
+            <column name="city" type="VARCHAR(255)"/>
+            <column name="country" type="VARCHAR(255)"/>
+            <column name="province" type="VARCHAR(255)"/>
+            <column name="street_name" type="VARCHAR(255)"/>
+            <column name="street_no" type="VARCHAR(255)"/>
+            <column name="title" type="VARCHAR(255)"/>
+            <column name="town" type="VARCHAR(255)"/>
+            <column name="zip_code" type="VARCHAR(255)"/>
+            <column name="user_id" type="BIGINT"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="merg (generated)" id="1658329728404-2">
+        <createTable tableName="approvals">
+            <column autoIncrement="true" name="id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="created_at" type="datetime"/>
+            <column name="created_by" type="BIGINT"/>
+            <column name="deleted" type="BIT(1)"/>
+            <column name="updated_at" type="datetime"/>
+            <column name="updated_by" type="BIGINT"/>
+            <column name="version" type="INT"/>
+            <column name="application_type" type="VARCHAR(255)"/>
+            <column name="approval_status" type="VARCHAR(255)"/>
+            <column name="description" type="VARCHAR(255)"/>
+            <column name="evaluator_id" type="BIGINT"/>
+            <column name="requester_id" type="BIGINT"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="merg (generated)" id="1658329728404-3">
+        <createTable tableName="companies">
+            <column autoIncrement="true" name="id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="created_at" type="datetime"/>
+            <column name="created_by" type="BIGINT"/>
+            <column name="deleted" type="BIT(1)"/>
+            <column name="updated_at" type="datetime"/>
+            <column name="updated_by" type="BIGINT"/>
+            <column name="version" type="INT"/>
+            <column name="iban" type="VARCHAR(255)"/>
+            <column name="company_executive_first_name" type="VARCHAR(255)"/>
+            <column name="company_executive_identity" type="VARCHAR(255)"/>
+            <column name="company_executive_last_name" type="VARCHAR(255)"/>
+            <column name="company_name" type="VARCHAR(255)"/>
+            <column name="company_type" type="VARCHAR(255)"/>
+            <column name="phone_number" type="VARCHAR(255)"/>
+            <column name="tax_id" type="VARCHAR(11)"/>
+            <column name="tax_registry" type="VARCHAR(255)"/>
+            <column name="trade_registry" type="VARCHAR(255)"/>
+            <column name="website" type="VARCHAR(255)"/>
+            <column name="address_id" type="BIGINT"/>
+            <column name="user_id" type="BIGINT"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="merg (generated)" id="1658329728404-4">
+        <createTable tableName="company_share_holders">
+            <column autoIncrement="true" name="id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="created_at" type="datetime"/>
+            <column name="created_by" type="BIGINT"/>
+            <column name="deleted" type="BIT(1)"/>
+            <column name="updated_at" type="datetime"/>
+            <column name="updated_by" type="BIGINT"/>
+            <column name="version" type="INT"/>
+            <column name="first_name" type="VARCHAR(255)"/>
+            <column name="identity" type="VARCHAR(255)"/>
+            <column name="last_name" type="VARCHAR(255)"/>
+            <column name="company_id" type="BIGINT"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="merg (generated)" id="1658329728404-5">
+        <createTable tableName="delete_account_requests">
+            <column autoIncrement="true" name="id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="created_at" type="datetime"/>
+            <column name="created_by" type="BIGINT"/>
+            <column name="deleted" type="BIT(1)"/>
+            <column name="updated_at" type="datetime"/>
+            <column name="updated_by" type="BIGINT"/>
+            <column name="version" type="INT"/>
+            <column name="auto_delete_date" type="datetime"/>
+            <column name="status" type="VARCHAR(255)"/>
+            <column name="requester_id" type="BIGINT"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="merg (generated)" id="1658329728404-6">
+        <createTable tableName="users">
+            <column autoIncrement="true" name="id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="created_at" type="datetime"/>
+            <column name="created_by" type="BIGINT"/>
+            <column name="deleted" type="BIT(1)"/>
+            <column name="updated_at" type="datetime"/>
+            <column name="updated_by" type="BIGINT"/>
+            <column name="version" type="INT"/>
+            <column name="iban" type="VARCHAR(255)"/>
+            <column name="birthdate" type="date"/>
+            <column name="email" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="firebase_uid" type="VARCHAR(255)">
+                <constraints unique="true"/>
+            </column>
+            <column name="firstname" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="language" type="VARCHAR(255)"/>
+            <column name="lastname" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="mobile_phone" type="VARCHAR(255)"/>
+            <column name="password" type="VARCHAR(255)"/>
+            <column name="profile_photo" type="VARCHAR(255)"/>
+            <column name="role" type="VARCHAR(255)"/>
+            <column name="store_link" type="VARCHAR(255)"/>
+            <column name="store_name" type="VARCHAR(255)"/>
+            <column name="username" type="VARCHAR(255)">
+                <constraints nullable="false" unique="true"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="merg (generated)" id="1658329728404-7">
+        <createIndex indexName="FK1fa36y2oqhao3wgg2rw1pi459" tableName="addresses">
+            <column name="user_id"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="merg (generated)" id="1658329728404-8">
+        <createIndex indexName="FK26bpb2a3url91ua6wpolo17v0" tableName="approvals">
+            <column name="requester_id"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="merg (generated)" id="1658329728404-9">
+        <createIndex indexName="FK5lgrqvgybtdbr68ffo407792d" tableName="delete_account_requests">
+            <column name="requester_id"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="merg (generated)" id="1658329728404-10">
+        <createIndex indexName="FK8w70yf6urddd0ky7ev90okenf" tableName="companies">
+            <column name="address_id"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="merg (generated)" id="1658329728404-11">
+        <createIndex indexName="FK9l5d0fem75e59uwf9upwuf9du" tableName="companies">
+            <column name="user_id"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="merg (generated)" id="1658329728404-12">
+        <createIndex indexName="FKbfy93bshtwmyaphnhp4w2x4y2" tableName="approvals">
+            <column name="evaluator_id"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="merg (generated)" id="1658329728404-13">
+        <createIndex indexName="FKldfro45o6su7an1ve96s1efi8" tableName="company_share_holders">
+            <column name="company_id"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="merg (generated)" id="1658329728404-14">
+        <addForeignKeyConstraint baseColumnNames="user_id" baseTableName="addresses" constraintName="FK1fa36y2oqhao3wgg2rw1pi459" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" onUpdate="RESTRICT" referencedColumnNames="id" referencedTableName="users" validate="true"/>
+    </changeSet>
+    <changeSet author="merg (generated)" id="1658329728404-15">
+        <addForeignKeyConstraint baseColumnNames="requester_id" baseTableName="approvals" constraintName="FK26bpb2a3url91ua6wpolo17v0" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" onUpdate="RESTRICT" referencedColumnNames="id" referencedTableName="users" validate="true"/>
+    </changeSet>
+    <changeSet author="merg (generated)" id="1658329728404-16">
+        <addForeignKeyConstraint baseColumnNames="requester_id" baseTableName="delete_account_requests" constraintName="FK5lgrqvgybtdbr68ffo407792d" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" onUpdate="RESTRICT" referencedColumnNames="id" referencedTableName="users" validate="true"/>
+    </changeSet>
+    <changeSet author="merg (generated)" id="1658329728404-17">
+        <addForeignKeyConstraint baseColumnNames="address_id" baseTableName="companies" constraintName="FK8w70yf6urddd0ky7ev90okenf" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" onUpdate="RESTRICT" referencedColumnNames="id" referencedTableName="addresses" validate="true"/>
+    </changeSet>
+    <changeSet author="merg (generated)" id="1658329728404-18">
+        <addForeignKeyConstraint baseColumnNames="user_id" baseTableName="companies" constraintName="FK9l5d0fem75e59uwf9upwuf9du" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" onUpdate="RESTRICT" referencedColumnNames="id" referencedTableName="users" validate="true"/>
+    </changeSet>
+    <changeSet author="merg (generated)" id="1658329728404-19">
+        <addForeignKeyConstraint baseColumnNames="evaluator_id" baseTableName="approvals" constraintName="FKbfy93bshtwmyaphnhp4w2x4y2" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" onUpdate="RESTRICT" referencedColumnNames="id" referencedTableName="users" validate="true"/>
+    </changeSet>
+    <changeSet author="merg (generated)" id="1658329728404-20">
+        <addForeignKeyConstraint baseColumnNames="company_id" baseTableName="company_share_holders" constraintName="FKldfro45o6su7an1ve96s1efi8" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" onUpdate="RESTRICT" referencedColumnNames="id" referencedTableName="companies" validate="true"/>
+    </changeSet>
+</databaseChangeLog>
