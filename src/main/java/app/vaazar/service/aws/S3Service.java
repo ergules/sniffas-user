@@ -14,8 +14,6 @@ import software.amazon.awssdk.services.s3.presigner.model.PutObjectPresignReques
 import javax.annotation.PostConstruct;
 import java.time.Duration;
 
-import static app.vaazar.domain.upload.entity.UploadType.PROFILE_PIC;
-
 @Service
 public class S3Service implements FileStorage {
 
@@ -24,15 +22,15 @@ public class S3Service implements FileStorage {
     private final S3Client s3Client;
     private static final Duration signExpire = Duration.ofMinutes(3);
 
-    @Value("${aws.s3.userDocumentsBucket}")
+    @Value("${aws.s3.documentBucket}")
     String documentsBucket;
-    @Value("${aws.s3.userProfilesBucket}")
-    String profilePicsBucket;
+    @Value("${aws.s3.fileBucket}")
+    String fileBucket;
 
     public String preSignWithObjectKey(String key, UploadType type) {
         log.info("Sign key {} for {}", key, type.name());
         PutObjectRequest objectRequest = PutObjectRequest.builder()
-                .bucket(type == PROFILE_PIC ? profilePicsBucket : documentsBucket)
+                .bucket(type.isDocument() ? documentsBucket : fileBucket)
                 .key(key)
                 .build();
 
@@ -55,6 +53,6 @@ public class S3Service implements FileStorage {
     @PostConstruct
     public void initS3Service() {
         log.info("s3 service started with {}, {}", presigner, s3Client);
-        log.info("\t profile bucket : {}, document bucket {}", profilePicsBucket, documentsBucket);
+        log.info("\t documents: {}, other files: {}", documentsBucket, fileBucket);
     }
 }
