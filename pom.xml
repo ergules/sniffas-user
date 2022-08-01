@@ -5,7 +5,7 @@
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>2.5.5</version>
+		<version>2.7.2</version>
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>app.vaazar</groupId>
@@ -15,6 +15,7 @@
 	<description>Auth, User and Address</description>
 	<properties>
 		<java.version>11</java.version>
+		<springdoc.version>1.6.9</springdoc.version>
 		<aws.version>2.17.42</aws.version>
 		<lombok.version>1.18.24</lombok.version>
 		<modelmapper.version>3.1.0</modelmapper.version>
@@ -69,7 +70,7 @@
 		<dependency>
 			<groupId>org.springdoc</groupId>
 			<artifactId>springdoc-openapi-ui</artifactId>
-			<version>1.5.11</version>
+			<version>${springdoc.version}</version>
 		</dependency>
 		<!-- Rabbit MQ -->
 		<dependency>
@@ -106,6 +107,11 @@
 		<dependency>
 			<groupId>org.springframework.security</groupId>
 			<artifactId>spring-security-test</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.mockito</groupId>
+			<artifactId>mockito-inline</artifactId>
 			<scope>test</scope>
 		</dependency>
 	</dependencies>

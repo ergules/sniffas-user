@@ -47,8 +47,8 @@ public class ApprovalServiceImpl implements ApprovalService {
                 persistedUser.updateBaseFields(requester);
                 persistedUser.updateSellerFields(requester);
                 if (!persistedUser.checkSellerInfo())
-                    throw new IllegalStateException("missing required fields");
-                else if (persistedUser.getRole().equals(Role.SELLER))
+                    throw new IllegalArgumentException("missing required fields");
+                else if (persistedUser.getRole() == Role.SELLER || persistedUser.getRole() == Role.COMPANY)
                     throw new IllegalStateException("already approved");
                 userService.saveUser(persistedUser);
                 break;
@@ -63,7 +63,7 @@ public class ApprovalServiceImpl implements ApprovalService {
                     userService.saveUser(persistedUser);
                 } // if company not null, updates must be made with via crud methods
                 if (!persistedUser.checkCompanyInfo())
-                    throw new IllegalStateException("missing required fields");
+                    throw new IllegalArgumentException("missing required fields");
                 else if (persistedUser.getRole().equals(Role.COMPANY))
                     throw new IllegalStateException("already approved");
         }
