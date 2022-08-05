@@ -30,5 +30,5 @@ public interface UserService {
 
     Optional<User> findByUid(String uid);
 
-    Page<BasicUser> findUsers(Optional<String> query, boolean seller, Pageable page);
+    Page<User> findUsers(Optional<String> query, boolean seller, Pageable page);
 }

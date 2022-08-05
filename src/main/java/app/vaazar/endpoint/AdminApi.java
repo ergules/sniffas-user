@@ -7,6 +7,7 @@ import app.vaazar.domain.deleteAccount.boundary.DeleteAccountService;
 import app.vaazar.domain.deleteAccount.entity.DeleteAccountRequest;
 import app.vaazar.domain.deleteAccount.entity.DeleteRequestStatus;
 import app.vaazar.domain.user.boundary.UserService;
+import app.vaazar.domain.user.entity.User;
 import app.vaazar.endpoint.dto.BasicUser;
 import app.vaazar.endpoint.dto.approval.ApprovalDTO;
 import app.vaazar.endpoint.dto.deleteAccount.DeleteAccountRequestDTO;
@@ -39,7 +40,9 @@ public class AdminApi {
     public Page<BasicUser> findUsers(@RequestParam Optional<String> query,
                                      @RequestParam(defaultValue = "false") boolean seller,
                                      Pageable pageable) {
-        return userService.findUsers(query, seller, pageable);
+        Page<User> resultPage = userService.findUsers(query, seller, pageable);
+        List<BasicUser> dtoList = mapList(resultPage.getContent(), BasicUser.class);
+        return new PageImpl<>(dtoList, resultPage.getPageable(), resultPage.getTotalElements());
     }
 
     @GetMapping("/users/{userId}")

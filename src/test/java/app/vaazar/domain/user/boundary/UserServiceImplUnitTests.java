@@ -155,49 +155,26 @@ public class UserServiceImplUnitTests {
     }
 
     @Test
-    public void findUsers_noQuery_customer() {
+    public void findUsers_noQuery() {
         Pageable page = Pageable.unpaged();
         service.findUsers(Optional.empty(), false, page);
-        verify(userRepo).findBasicUsers(page);
+        verify(userRepo).findBasicUsers(false, page);
     }
 
     @Test
-    public void findUsers_noQuery_seller() {
-        Pageable page = Pageable.unpaged();
-        service.findUsers(Optional.empty(), true, page);
-        verify(userRepo).findBasicSellers(page);
-    }
-
-    @Test
-    public void findUsers_string_customer() {
-        Pageable page = Pageable.unpaged();
-        String query = "str";
-        service.findUsers(Optional.of(query), false, page);
-        verify(userRepo).findBasicUsersByName(query, page);
-    }
-
-    @Test
-    public void findUsers_string_seller() {
+    public void findUsers_nameQuery() {
         Pageable page = Pageable.unpaged();
         String query = "str";
         service.findUsers(Optional.of(query), true, page);
-        verify(userRepo).findBasicSellersByName(query, page);
+        verify(userRepo).findBasicUsersByName(true, query, page);
     }
 
     @Test
-    public void findUsers_email_customer() {
+    public void findUsers_emailQuery() {
         Pageable page = Pageable.unpaged();
         String query = "mail@sniffas.com";
         service.findUsers(Optional.of(query), false, page);
-        verify(userRepo).findBasicUsersByEmail(query, page);
-    }
-
-    @Test
-    public void findUsers_email_seller() {
-        Pageable page = Pageable.unpaged();
-        String query = "mail@sniffas.com";
-        service.findUsers(Optional.of(query), true, page);
-        verify(userRepo).findBasicSellersByEmail(query, page);
+        verify(userRepo).findBasicUsersByEmail(false, query, page);
     }
 
 }

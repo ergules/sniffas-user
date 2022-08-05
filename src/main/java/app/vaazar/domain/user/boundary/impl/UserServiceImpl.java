@@ -105,22 +105,14 @@ public class UserServiceImpl implements UserService {
         return userRepo.findByFirebaseUid(uid);
     }
 
-    public Page<BasicUser> findUsers(Optional<String> query, boolean seller, Pageable page) {
+    public Page<User> findUsers(Optional<String> query, boolean sellersOnly, Pageable page) {
         if (query.isPresent() && query.get().length() > 0) {
-            if (emailQueryPattern.matcher(query.get()).matches()) {
-                return seller ?
-                        userRepo.findBasicSellersByEmail(query.get(), page) :
-                        userRepo.findBasicUsersByEmail(query.get(), page);
-            } else {
-                return seller ?
-                        userRepo.findBasicSellersByName(query.get(), page) :
-                        userRepo.findBasicUsersByName(query.get(), page);
-            }
-        } else {
-            return seller ?
-                    userRepo.findBasicSellers(page) :
-                    userRepo.findBasicUsers(page);
-        }
+            if (emailQueryPattern.matcher(query.get()).matches())
+                return userRepo.findBasicUsersByEmail(sellersOnly, query.get(), page);
+            else
+                return userRepo.findBasicUsersByName(sellersOnly, query.get(), page);
+        } else
+            return userRepo.findBasicUsers(sellersOnly, page);
     }
 
     public UserServiceImpl(UserRepository userRepo, FirebaseAuthService firebaseAuthService, DeleteAccountService deleteAccountService, ApplicationEventPublisher eventPublisher) {
