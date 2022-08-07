@@ -40,6 +40,7 @@ public class CompanyServiceImplUnitTests {
     public void saveCompany() {
         Company company = new Company();
         company.setTaxId("_taxId");
+        company.setUser(new User());
         when(companyRepo.save(any())).thenAnswer(i -> i.getArguments()[0]);
 
         assertEquals(service.saveCompany(company).getTaxId(), "_taxId");

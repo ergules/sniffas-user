@@ -6,6 +6,7 @@ import app.vaazar.domain.company.control.ShareHolderRepository;
 import app.vaazar.domain.company.entity.Company;
 import app.vaazar.domain.company.entity.ShareHolder;
 import org.slf4j.Logger;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -18,6 +19,8 @@ public class CompanyServiceImpl implements CompanyService {
     ShareHolderRepository shareHolderRepo;
 
     public Company saveCompany(Company entity) {
+        if (entity.getUser() == null)
+            throw new DataIntegrityViolationException("company must belong to a user");
         return companyRepo.save(entity);
     }
 

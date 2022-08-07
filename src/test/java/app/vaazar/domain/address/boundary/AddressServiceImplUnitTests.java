@@ -3,8 +3,6 @@ package app.vaazar.domain.address.boundary;
 import app.vaazar.domain.address.boundary.impl.AddressServiceImpl;
 import app.vaazar.domain.address.control.AddressRepository;
 import app.vaazar.domain.address.entity.Address;
-import app.vaazar.domain.company.control.CompanyRepository;
-import app.vaazar.domain.company.entity.Company;
 import app.vaazar.domain.user.control.UserRepository;
 import app.vaazar.domain.user.entity.User;
 import org.junit.jupiter.api.Test;
@@ -16,7 +14,8 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import java.util.Collections;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 
 @ExtendWith(SpringExtension.class)
@@ -24,8 +23,6 @@ public class AddressServiceImplUnitTests {
 
     @Mock
     AddressRepository addressRepo;
-    @Mock
-    CompanyRepository companyRepo;
     @Mock
     UserRepository userRepo;
     @InjectMocks
@@ -48,27 +45,6 @@ public class AddressServiceImplUnitTests {
         service.saveAddress(address);
 
         Mockito.verify(addressRepo).save(any());
-    }
-
-    @Test
-    public void saveAddress_withCompany() {
-        Address address = new Address();
-
-        Company company = new Company();
-        company.setId(50L);
-
-        Company companyReturned = new Company();
-        companyReturned.setId(40L);
-
-        address.setCompany(company);
-        address.setCity("_city");
-
-        Mockito.when(companyRepo.findById(any())).thenReturn(Optional.of(companyReturned));
-        Mockito.when(addressRepo.save(address)).thenReturn(address);
-        Address saved = service.saveAddress(address);
-
-        Mockito.verify(addressRepo).save(any());
-        assertEquals(saved.getCompany().getId(), companyReturned.getId());
     }
 
     @Test

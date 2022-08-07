@@ -137,4 +137,41 @@ public class Address extends BaseEntity {
     public void setCompany(Company company) {
         this.company = company;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Address)) return false;
+
+        Address address = (Address) o;
+
+        if (getTitle() != null ? !getTitle().equals(address.getTitle()) : address.getTitle() != null) return false;
+        if (getCountry() != null ? !getCountry().equals(address.getCountry()) : address.getCountry() != null)
+            return false;
+        if (getProvince() != null ? !getProvince().equals(address.getProvince()) : address.getProvince() != null)
+            return false;
+        if (getCity() != null ? !getCity().equals(address.getCity()) : address.getCity() != null) return false;
+        if (getTown() != null ? !getTown().equals(address.getTown()) : address.getTown() != null) return false;
+        if (getZipCode() != null ? !getZipCode().equals(address.getZipCode()) : address.getZipCode() != null)
+            return false;
+        if (getStreetName() != null ? !getStreetName().equals(address.getStreetName()) : address.getStreetName() != null)
+            return false;
+        if (getStreetNo() != null ? !getStreetNo().equals(address.getStreetNo()) : address.getStreetNo() != null)
+            return false;
+        return getAddressString() != null ? getAddressString().equals(address.getAddressString()) : address.getAddressString() == null;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = getTitle() != null ? getTitle().hashCode() : 0;
+        result = 31 * result + (getCountry() != null ? getCountry().hashCode() : 0);
+        result = 31 * result + (getProvince() != null ? getProvince().hashCode() : 0);
+        result = 31 * result + (getCity() != null ? getCity().hashCode() : 0);
+        result = 31 * result + (getTown() != null ? getTown().hashCode() : 0);
+        result = 31 * result + (getZipCode() != null ? getZipCode().hashCode() : 0);
+        result = 31 * result + (getStreetName() != null ? getStreetName().hashCode() : 0);
+        result = 31 * result + (getStreetNo() != null ? getStreetNo().hashCode() : 0);
+        result = 31 * result + (getAddressString() != null ? getAddressString().hashCode() : 0);
+        return result;
+    }
 }

@@ -55,6 +55,8 @@ public class Company extends BaseEntity {
         this.website = other.website;
         this.tradeRegistry = other.tradeRegistry;
         this.taxRegistry = other.taxRegistry;
+        this.taxId = other.taxId;
+        this.companyType = other.companyType;
         this.IBAN = other.IBAN;
         this.companyExecutiveFirstName = other.companyExecutiveFirstName;
         this.companyExecutiveLastName = other.companyExecutiveLastName;
@@ -172,5 +174,51 @@ public class Company extends BaseEntity {
 
     public void setCompanyType(CompanyType companyType) {
         this.companyType = companyType;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Company)) return false;
+
+        Company company = (Company) o;
+
+        if (getCompanyName() != null ? !getCompanyName().equals(company.getCompanyName()) : company.getCompanyName() != null)
+            return false;
+        if (getWebsite() != null ? !getWebsite().equals(company.getWebsite()) : company.getWebsite() != null)
+            return false;
+        if (getTaxId() != null ? !getTaxId().equals(company.getTaxId()) : company.getTaxId() != null) return false;
+        if (getTradeRegistry() != null ? !getTradeRegistry().equals(company.getTradeRegistry()) : company.getTradeRegistry() != null)
+            return false;
+        if (getTaxRegistry() != null ? !getTaxRegistry().equals(company.getTaxRegistry()) : company.getTaxRegistry() != null)
+            return false;
+        if (getIBAN() != null ? !getIBAN().equals(company.getIBAN()) : company.getIBAN() != null) return false;
+        if (getCompanyType() != company.getCompanyType()) return false;
+        if (getCompanyExecutiveFirstName() != null ? !getCompanyExecutiveFirstName().equals(company.getCompanyExecutiveFirstName()) : company.getCompanyExecutiveFirstName() != null)
+            return false;
+        if (getCompanyExecutiveLastName() != null ? !getCompanyExecutiveLastName().equals(company.getCompanyExecutiveLastName()) : company.getCompanyExecutiveLastName() != null)
+            return false;
+        if (getCompanyExecutiveIdentity() != null ? !getCompanyExecutiveIdentity().equals(company.getCompanyExecutiveIdentity()) : company.getCompanyExecutiveIdentity() != null)
+            return false;
+        if (getPhoneNumber() != null ? !getPhoneNumber().equals(company.getPhoneNumber()) : company.getPhoneNumber() != null)
+            return false;
+        return getAddress() != null ? getAddress().equals(company.getAddress()) : company.getAddress() == null;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = getCompanyName() != null ? getCompanyName().hashCode() : 0;
+        result = 31 * result + (getWebsite() != null ? getWebsite().hashCode() : 0);
+        result = 31 * result + (getTaxId() != null ? getTaxId().hashCode() : 0);
+        result = 31 * result + (getTradeRegistry() != null ? getTradeRegistry().hashCode() : 0);
+        result = 31 * result + (getTaxRegistry() != null ? getTaxRegistry().hashCode() : 0);
+        result = 31 * result + (getIBAN() != null ? getIBAN().hashCode() : 0);
+        result = 31 * result + (getCompanyType() != null ? getCompanyType().hashCode() : 0);
+        result = 31 * result + (getCompanyExecutiveFirstName() != null ? getCompanyExecutiveFirstName().hashCode() : 0);
+        result = 31 * result + (getCompanyExecutiveLastName() != null ? getCompanyExecutiveLastName().hashCode() : 0);
+        result = 31 * result + (getCompanyExecutiveIdentity() != null ? getCompanyExecutiveIdentity().hashCode() : 0);
+        result = 31 * result + (getPhoneNumber() != null ? getPhoneNumber().hashCode() : 0);
+        result = 31 * result + (getAddress() != null ? getAddress().hashCode() : 0);
+        return result;
     }
 }

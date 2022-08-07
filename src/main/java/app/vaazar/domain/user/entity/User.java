@@ -43,7 +43,7 @@ import static app.vaazar.domain.user.entity.User.*;
         )
 )
 @NamedNativeQuery(name = BASIC_USERS_IN_LIST,
-        query = "SELECT id, username, firstname, lastname, profile_photo, role FROM users u WHERE deleted <> 1 and id IN ?1",
+        query = "SELECT id, username, firstname, lastname, profile_photo, role FROM users u WHERE deleted <> true and id IN ?1",
         resultSetMapping = "BasicUserMapping")
 @NamedQuery(name = BASIC_USERS_NO_QUERY,
         query = SELECT_FIELDS + "WHERE u.deleted <> true " + SELLER_FILTER)
