@@ -18,6 +18,7 @@ import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
@@ -46,8 +47,12 @@ public class AdminApi {
     }
 
     @GetMapping("/users/{userId}")
-    public UserDTO findUser(@PathVariable Long userId) {
-        return modelMapper.map(userService.findById(userId), UserDTO.class);
+    public ResponseEntity<UserDTO> findUser(@PathVariable Long userId) {
+        User result = userService.findById(userId);
+
+        return result == null
+                ? ResponseEntity.status(404).build()
+                : ResponseEntity.ok(modelMapper.map(result, UserDTO.class));
     }
 
     @GetMapping("/approvals")

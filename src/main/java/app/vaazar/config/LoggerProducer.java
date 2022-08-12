@@ -12,7 +12,7 @@ public class LoggerProducer {
 
     @Bean
     @Scope("prototype")
-    Logger logger(InjectionPoint injectionPoint){
+    public Logger logger(InjectionPoint injectionPoint) {
         if (injectionPoint.getMethodParameter() != null) {
             return LoggerFactory.getLogger(injectionPoint.getMethodParameter().getContainingClass());
         }

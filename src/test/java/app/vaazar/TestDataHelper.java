@@ -6,16 +6,33 @@ import app.vaazar.domain.company.entity.Company;
 import app.vaazar.domain.company.entity.CompanyType;
 import app.vaazar.domain.user.entity.Role;
 import app.vaazar.domain.user.entity.User;
+import com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
+import com.fasterxml.jackson.annotation.PropertyAccessor;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
 import org.modelmapper.ModelMapper;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 
+import javax.persistence.EntityManager;
 import java.util.List;
 
 public class TestDataHelper {
 
     private static final ModelMapper modelMapper = new ModelMapperConfig().getDefaultMapper();
+    private static final ObjectMapper objectMapper;
+
+    static {
+        objectMapper = new ObjectMapper();
+        objectMapper.findAndRegisterModules();
+        objectMapper.setDefaultPropertyInclusion(Include.NON_NULL);
+        objectMapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
+        objectMapper.setVisibility(PropertyAccessor.ALL, Visibility.NONE);
+        objectMapper.setVisibility(PropertyAccessor.FIELD, Visibility.ANY);
+    }
 
     public static Company generateValidCompany() {
         Company company = new Company();
@@ -36,14 +53,22 @@ public class TestDataHelper {
     }
 
     public static User getAdmin(TestEntityManager entityManager) {
-        return entityManager.getEntityManager()
+        return getAdmin(entityManager.getEntityManager());
+    }
+
+    public static User getAdmin(EntityManager entityManager) {
+        return entityManager
                 .createQuery("select u from User u where u.role = :role", User.class)
                 .setParameter("role", Role.ADMIN)
                 .getSingleResult();
     }
 
     public static List<User> getPrivateSellers(TestEntityManager entityManager) {
-        return entityManager.getEntityManager()
+        return getPrivateSellers(entityManager.getEntityManager());
+    }
+
+    public static List<User> getPrivateSellers(EntityManager entityManager) {
+        return entityManager
                 .createQuery("select u from User u where u.role = :role", User.class)
                 .setParameter("role", Role.SELLER)
                 .getResultList();
@@ -69,6 +94,18 @@ public class TestDataHelper {
     public static <T, D> T deepCopy(Class<D> withConverting, T obj) {
         D converted = modelMapper.map(obj, withConverting);
         return (T) modelMapper.map(converted, obj.getClass());
+    }
+
+    public static String asJson(Object obj) {
+        try {
+            return objectMapper.writeValueAsString(obj);
+        } catch (JsonProcessingException e) {
+            return "";
+        }
+    }
+
+    public static ObjectMapper getObjectMapper() {
+        return objectMapper;
     }
 
 }

@@ -197,7 +197,11 @@ public class UsersApi {
     }
 
     @GetMapping("/{userId}/seller-requests/{approvalId}")
-    public ApprovalDTO getSellerApproval(@PathVariable Long userId, @PathVariable Long approvalId) {
+    public ApprovalDTO getSellerApproval(@PathVariable Long userId, @PathVariable Long approvalId,
+                                         UsernamePasswordAuthenticationToken contextUser) {
+        User loggedUser = (User) contextUser.getPrincipal();
+        if (!userId.equals(loggedUser.getId()))
+            throw new AccessDeniedException("logged userId do not match with target");
         Approval approval = approvalService.getApproval(approvalId);
         if (approval.getRequester().getId().equals(userId))
             return modelMapper.map(approval, ApprovalDTO.class);
