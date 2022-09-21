@@ -52,11 +52,6 @@
 		<!-- AWS -->
 		<dependency>
 			<groupId>software.amazon.awssdk</groupId>
-			<artifactId>chime</artifactId>
-			<version>${aws.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>software.amazon.awssdk</groupId>
 			<artifactId>s3</artifactId>
 			<version>${aws.version}</version>
 		</dependency>

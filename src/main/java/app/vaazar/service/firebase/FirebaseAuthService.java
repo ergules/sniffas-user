@@ -12,15 +12,15 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
-import java.io.FileInputStream;
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
 @Service
 public class FirebaseAuthService {
 
-    @Value("${app.paths.firebase-keys}")
-    String firebaseKeyPath;
+    @Value("${app.firebase-token}")
+    String firebaseToken;
 
     FirebaseAuth auth;
 
@@ -43,7 +43,7 @@ public class FirebaseAuthService {
     @PostConstruct
     public void initFirebaseService() {
         try (InputStream serviceAccount =
-                     new FileInputStream(firebaseKeyPath)) {
+                     new ByteArrayInputStream(firebaseToken.getBytes())) {
             FirebaseOptions options = new FirebaseOptions.Builder()
                     .setCredentials(GoogleCredentials.fromStream(serviceAccount))
                     .build();

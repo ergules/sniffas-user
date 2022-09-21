@@ -1,0 +1,25 @@
+include:
+  - project: 'sniffas/gitlab-ci-templates'
+    ref: main
+    file:
+      - '/build-mvn.yml'
+      - '/push.yml'
+      - '/k8s-deploy.yml'
+
+variables: 
+  SERVICE_ID: 'user'
+
+stages:
+  - build
+  - push
+  - deploy
+
+build:
+  extends: .build-without-test
+
+push:
+  extends: .push
+
+deploy:
+  extends: .deploy-stage
+      
