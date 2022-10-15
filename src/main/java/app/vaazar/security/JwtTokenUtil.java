@@ -39,6 +39,8 @@ public class JwtTokenUtil {
 
     public String generateAccessToken(User user) {
         logger.info("generate token for {}-{}", user.getId(), user.getEmail());
+        if (user.getDeleted())
+            throw new IllegalStateException("user is deleted");
         String sb = user.getId() + SEPARATOR +
                 user.getUsername() + SEPARATOR +
                 user.getEmail() + SEPARATOR +

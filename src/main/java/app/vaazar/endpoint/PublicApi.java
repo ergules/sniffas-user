@@ -36,10 +36,11 @@ public class PublicApi {
         try {
             FirebaseToken firebaseToken = firebaseService.verifyIdToken(token);
             User user = userService.findByUid(firebaseToken.getUid()).orElseThrow();
+            String jwtToken = jwtTokenUtil.generateAccessToken(user);
             UserDTO dto = modelMapper.map(user, UserDTO.class);
             return ResponseEntity.ok()
                     .header("Access-Control-Expose-Headers", "Authorization")
-                    .header(HttpHeaders.AUTHORIZATION, jwtTokenUtil.generateAccessToken(user))
+                    .header(HttpHeaders.AUTHORIZATION, jwtToken)
                     .body(dto);
 
         } catch (AuthorisationException fae) {

@@ -4,6 +4,7 @@ import app.vaazar.config.exception.AuthorisationException;
 import app.vaazar.domain.deleteAccount.boundary.DeleteAccountService;
 import app.vaazar.domain.deleteAccount.entity.DeleteAccountRequest;
 import app.vaazar.domain.event.entity.UserCreatedEvent;
+import app.vaazar.domain.event.entity.UserDeletedEvent;
 import app.vaazar.domain.user.boundary.UserService;
 import app.vaazar.domain.user.control.UserRepository;
 import app.vaazar.domain.user.entity.Role;
@@ -94,6 +95,7 @@ public class UserServiceImpl implements UserService {
         if (user.getRole() == Role.USER) {
             user.setDeleted(true);
             userRepo.save(user);
+            eventPublisher.publishEvent(new UserDeletedEvent(user));
         }
         if (user.getRole() == Role.SELLER || user.getRole() == Role.COMPANY) {
             return deleteAccountService.requestToDeleteAccount(user);

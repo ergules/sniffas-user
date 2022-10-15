@@ -6,11 +6,13 @@ import app.vaazar.domain.deleteAccount.entity.DeleteAccountRequest;
 import app.vaazar.domain.user.control.UserRepository;
 import app.vaazar.domain.user.entity.User;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Pageable;
 import org.springframework.test.context.ActiveProfiles;
 
@@ -133,6 +135,6 @@ public class DeleteAccountServiceImplIntegrationTests {
 
         Logger logger = LoggerFactory.getLogger(DeleteAccountServiceImpl.class);
         this.entityManager = entityManager;
-        this.service = new DeleteAccountServiceImpl(deleteRequestRepo, userRepo, logger);
+        this.service = new DeleteAccountServiceImpl(deleteRequestRepo, userRepo, Mockito.mock(ApplicationEventPublisher.class), logger);
     }
 }

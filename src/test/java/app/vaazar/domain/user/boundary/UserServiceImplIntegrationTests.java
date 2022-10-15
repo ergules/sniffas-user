@@ -241,7 +241,7 @@ public class UserServiceImplIntegrationTests {
         firebaseAuthService = Mockito.mock(FirebaseAuthService.class);
         ApplicationEventPublisher eventPublisher = Mockito.mock(ApplicationEventPublisher.class);
         Logger dASL = LoggerFactory.getLogger(DeleteAccountServiceImpl.class);
-        DeleteAccountService deleteAccountService = new DeleteAccountServiceImpl(deleteRequestRepo, userRepo, dASL);
+        DeleteAccountService deleteAccountService = new DeleteAccountServiceImpl(deleteRequestRepo, userRepo, eventPublisher, dASL);
 
         this.entityManager = entityManager;
         this.service = new UserServiceImpl(userRepo, firebaseAuthService, deleteAccountService, eventPublisher);

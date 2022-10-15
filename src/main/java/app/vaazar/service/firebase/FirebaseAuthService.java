@@ -40,6 +40,14 @@ public class FirebaseAuthService {
         }
     }
 
+    public void deleteFirebaseRecord(String uid) throws AuthorisationException {
+        try {
+            auth.deleteUser(uid);
+        } catch (FirebaseAuthException e) {
+            throw new AuthorisationException(e.getMessage());
+        }
+    }
+
     @PostConstruct
     public void initFirebaseService() {
         try (InputStream serviceAccount =

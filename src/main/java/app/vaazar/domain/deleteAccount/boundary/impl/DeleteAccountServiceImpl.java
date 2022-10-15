@@ -4,9 +4,11 @@ import app.vaazar.domain.deleteAccount.boundary.DeleteAccountService;
 import app.vaazar.domain.deleteAccount.control.DeleteRequestRepository;
 import app.vaazar.domain.deleteAccount.entity.DeleteAccountRequest;
 import app.vaazar.domain.deleteAccount.entity.DeleteRequestStatus;
+import app.vaazar.domain.event.entity.UserDeletedEvent;
 import app.vaazar.domain.user.control.UserRepository;
 import app.vaazar.domain.user.entity.User;
 import org.slf4j.Logger;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -23,6 +25,7 @@ import static app.vaazar.domain.deleteAccount.entity.DeleteRequestStatus.*;
 public class DeleteAccountServiceImpl implements DeleteAccountService {
     private final DeleteRequestRepository deleteRequestRepo;
     private final UserRepository userRepo;
+    private final ApplicationEventPublisher eventPublisher;
     private final Logger log;
 
     public DeleteAccountRequest requestToDeleteAccount(User user) {
@@ -71,12 +74,14 @@ public class DeleteAccountServiceImpl implements DeleteAccountService {
             request.getRequester().setDeleted(true);
             userRepo.save(request.getRequester());
             deleteRequestRepo.save(request);
+            eventPublisher.publishEvent(new UserDeletedEvent(request.getRequester()));
         }
     }
 
-    public DeleteAccountServiceImpl(DeleteRequestRepository deleteRequestRepo, UserRepository userRepo, Logger log) {
+    public DeleteAccountServiceImpl(DeleteRequestRepository deleteRequestRepo, UserRepository userRepo, ApplicationEventPublisher eventPublisher, Logger log) {
         this.deleteRequestRepo = deleteRequestRepo;
         this.userRepo = userRepo;
+        this.eventPublisher = eventPublisher;
         this.log = log;
     }
 }

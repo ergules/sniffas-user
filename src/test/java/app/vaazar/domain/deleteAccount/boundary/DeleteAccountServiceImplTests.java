@@ -11,6 +11,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.slf4j.Logger;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Pageable;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
@@ -31,6 +32,8 @@ public class DeleteAccountServiceImplTests {
     DeleteRequestRepository deleteRequestRepo;
     @Mock
     UserRepository userRepo;
+    @Mock
+    ApplicationEventPublisher eventPublisher;
     @Mock
     Logger log;
     @InjectMocks
