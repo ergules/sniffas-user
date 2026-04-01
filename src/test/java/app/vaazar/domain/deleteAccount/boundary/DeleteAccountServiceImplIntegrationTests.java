@@ -3,6 +3,7 @@ package app.vaazar.domain.deleteAccount.boundary;
 import app.vaazar.domain.deleteAccount.boundary.impl.DeleteAccountServiceImpl;
 import app.vaazar.domain.deleteAccount.control.DeleteRequestRepository;
 import app.vaazar.domain.deleteAccount.entity.DeleteAccountRequest;
+import app.vaazar.domain.refreshtoken.boundary.RefreshTokenService;
 import app.vaazar.domain.user.control.UserRepository;
 import app.vaazar.domain.user.entity.User;
 import org.junit.jupiter.api.Test;
@@ -135,6 +136,6 @@ public class DeleteAccountServiceImplIntegrationTests {
 
         Logger logger = LoggerFactory.getLogger(DeleteAccountServiceImpl.class);
         this.entityManager = entityManager;
-        this.service = new DeleteAccountServiceImpl(deleteRequestRepo, userRepo, Mockito.mock(ApplicationEventPublisher.class), logger);
+        this.service = new DeleteAccountServiceImpl(deleteRequestRepo, userRepo, Mockito.mock(RefreshTokenService.class), Mockito.mock(ApplicationEventPublisher.class), logger);
     }
 }

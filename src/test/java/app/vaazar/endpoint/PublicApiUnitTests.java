@@ -4,10 +4,13 @@ import app.vaazar.TestDataHelper;
 import app.vaazar.config.LoggerProducer;
 import app.vaazar.config.ModelMapperConfig;
 import app.vaazar.config.exception.AuthorisationException;
+import app.vaazar.domain.refreshtoken.boundary.RefreshTokenService;
+import app.vaazar.domain.refreshtoken.entity.RefreshToken;
 import app.vaazar.domain.user.boundary.UserService;
 import app.vaazar.domain.user.entity.Role;
 import app.vaazar.domain.user.entity.User;
 import app.vaazar.endpoint.dto.BasicUser;
+import app.vaazar.endpoint.dto.RefreshTokenRequest;
 import app.vaazar.endpoint.dto.RegistrationDto;
 import app.vaazar.endpoint.dto.user.UserDTO;
 import app.vaazar.security.JwtTokenUtil;
@@ -51,6 +54,8 @@ public class PublicApiUnitTests {
     UserService userService;
     @MockBean
     FirebaseAuthService firebaseService;
+    @MockBean
+    RefreshTokenService refreshTokenService;
     @Autowired
     MockMvc mockMvc;
     @Captor
@@ -72,11 +77,16 @@ public class PublicApiUnitTests {
         when(firebaseService.verifyIdToken(fbToken)).thenReturn(token);
         when(userService.findByUid(uid)).thenReturn(Optional.of(user));
 
+        RefreshToken refreshToken = new RefreshToken();
+        refreshToken.setToken("refresh-token-value");
+        when(refreshTokenService.createRefreshToken(user)).thenReturn(refreshToken);
+
         RequestBuilder request = post(base + "/login")
                 .content(fbToken);
 
         mockMvc.perform(request)
                 .andExpect(header().exists(HttpHeaders.AUTHORIZATION))
+                .andExpect(header().string("Refresh-Token", "refresh-token-value"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(userId))
                 .andExpect(jsonPath("$.username").value(username))
@@ -211,6 +221,80 @@ public class PublicApiUnitTests {
         mockMvc.perform(nonExistentReq)
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$").value(true));
+    }
+
+    @Test
+    public void refreshToken_happy() throws Exception {
+        Long userId = 37L;
+        String username = "un";
+        String email = "37@mail.com";
+        String existingRefreshToken = "existing-refresh-token";
+        User user = new User(userId, email, username, Role.USER);
+
+        when(refreshTokenService.validateRefreshToken(existingRefreshToken)).thenReturn(user);
+
+        RefreshTokenRequest refreshRequest = new RefreshTokenRequest();
+        refreshRequest.setRefreshToken(existingRefreshToken);
+
+        RequestBuilder request = post(base + "/refresh")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(asJson(refreshRequest));
+
+        mockMvc.perform(request)
+                .andExpect(status().isOk())
+                .andExpect(header().exists(HttpHeaders.AUTHORIZATION))
+                .andExpect(header().string("Refresh-Token", existingRefreshToken))
+                .andExpect(jsonPath("$.id").value(userId))
+                .andExpect(jsonPath("$.username").value(username))
+                .andExpect(jsonPath("$.email").value(email));
+    }
+
+    @Test
+    public void refreshToken_whenInvalidTokenReturn401() throws Exception {
+        when(refreshTokenService.validateRefreshToken(any()))
+                .thenThrow(new AuthorisationException("Invalid refresh token"));
+
+        RefreshTokenRequest refreshRequest = new RefreshTokenRequest();
+        refreshRequest.setRefreshToken("invalid-token");
+
+        RequestBuilder request = post(base + "/refresh")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(asJson(refreshRequest));
+
+        mockMvc.perform(request)
+                .andExpect(status().is(401));
+    }
+
+    @Test
+    public void refreshToken_whenExpiredTokenReturn401() throws Exception {
+        when(refreshTokenService.validateRefreshToken(any()))
+                .thenThrow(new AuthorisationException("Refresh token has expired. Please log in again."));
+
+        RefreshTokenRequest refreshRequest = new RefreshTokenRequest();
+        refreshRequest.setRefreshToken("expired-token");
+
+        RequestBuilder request = post(base + "/refresh")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(asJson(refreshRequest));
+
+        mockMvc.perform(request)
+                .andExpect(status().is(401));
+    }
+
+    @Test
+    public void refreshToken_whenDeletedUserReturn401() throws Exception {
+        when(refreshTokenService.validateRefreshToken(any()))
+                .thenThrow(new AuthorisationException("User account has been deleted"));
+
+        RefreshTokenRequest refreshRequest = new RefreshTokenRequest();
+        refreshRequest.setRefreshToken("some-token");
+
+        RequestBuilder request = post(base + "/refresh")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(asJson(refreshRequest));
+
+        mockMvc.perform(request)
+                .andExpect(status().is(401));
     }
 
     @Test

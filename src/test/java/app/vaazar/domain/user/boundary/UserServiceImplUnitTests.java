@@ -2,6 +2,7 @@ package app.vaazar.domain.user.boundary;
 
 import app.vaazar.config.exception.AuthorisationException;
 import app.vaazar.domain.deleteAccount.boundary.DeleteAccountService;
+import app.vaazar.domain.refreshtoken.boundary.RefreshTokenService;
 import app.vaazar.domain.user.boundary.impl.UserServiceImpl;
 import app.vaazar.domain.user.control.UserRepository;
 import app.vaazar.domain.user.entity.Role;
@@ -34,6 +35,8 @@ public class UserServiceImplUnitTests {
     FirebaseAuthService firebaseAuthService;
     @Mock
     DeleteAccountService deleteAccountService;
+    @Mock
+    RefreshTokenService refreshTokenService;
     @Mock
     ApplicationEventPublisher eventPublisher;
 
@@ -137,6 +140,7 @@ public class UserServiceImplUnitTests {
 
         service.deleteUser(user.getId());
         verify(userRepo).save(user);
+        verify(refreshTokenService).deleteByUser(user);
         assertTrue(user.getDeleted());
     }
 
@@ -151,6 +155,7 @@ public class UserServiceImplUnitTests {
 
         verify(deleteAccountService).requestToDeleteAccount(user);
         verify(userRepo, never()).save(user);
+        verify(refreshTokenService, never()).deleteByUser(any());
         assertFalse(user.getDeleted());
     }
 

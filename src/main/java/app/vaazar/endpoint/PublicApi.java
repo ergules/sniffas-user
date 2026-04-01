@@ -1,9 +1,12 @@
 package app.vaazar.endpoint;
 
 import app.vaazar.config.exception.AuthorisationException;
+import app.vaazar.domain.refreshtoken.boundary.RefreshTokenService;
+import app.vaazar.domain.refreshtoken.entity.RefreshToken;
 import app.vaazar.domain.user.boundary.UserService;
 import app.vaazar.domain.user.entity.User;
 import app.vaazar.endpoint.dto.BasicUser;
+import app.vaazar.endpoint.dto.RefreshTokenRequest;
 import app.vaazar.endpoint.dto.RegistrationDto;
 import app.vaazar.endpoint.dto.user.UserDTO;
 import app.vaazar.security.JwtTokenUtil;
@@ -29,6 +32,7 @@ public class PublicApi {
     private final UserService userService;
     private final JwtTokenUtil jwtTokenUtil;
     private final FirebaseAuthService firebaseService;
+    private final RefreshTokenService refreshTokenService;
     private final ModelMapper modelMapper;
 
     @PostMapping("login")
@@ -36,18 +40,31 @@ public class PublicApi {
         try {
             FirebaseToken firebaseToken = firebaseService.verifyIdToken(token);
             User user = userService.findByUid(firebaseToken.getUid()).orElseThrow();
-            String jwtToken = jwtTokenUtil.generateAccessToken(user);
-            UserDTO dto = modelMapper.map(user, UserDTO.class);
-            return ResponseEntity.ok()
-                    .header("Access-Control-Expose-Headers", "Authorization")
-                    .header(HttpHeaders.AUTHORIZATION, jwtToken)
-                    .body(dto);
+            RefreshToken refreshToken = refreshTokenService.createRefreshToken(user);
+            return buildAuthResponse(user, refreshToken.getToken());
 
         } catch (AuthorisationException fae) {
             throw new AccessDeniedException("token is invalid");
         } catch (NoSuchElementException nse) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
+    }
+
+    @PostMapping("/refresh")
+    public ResponseEntity<UserDTO> refreshToken(@Valid @RequestBody RefreshTokenRequest request)
+            throws AuthorisationException {
+        User user = refreshTokenService.validateRefreshToken(request.getRefreshToken());
+        return buildAuthResponse(user, request.getRefreshToken());
+    }
+
+    private ResponseEntity<UserDTO> buildAuthResponse(User user, String refreshToken) {
+        String jwtToken = jwtTokenUtil.generateAccessToken(user);
+        UserDTO dto = modelMapper.map(user, UserDTO.class);
+        return ResponseEntity.ok()
+                .header("Access-Control-Expose-Headers", "Authorization, Refresh-Token")
+                .header(HttpHeaders.AUTHORIZATION, jwtToken)
+                .header("Refresh-Token", refreshToken)
+                .body(dto);
     }
 
     @PostMapping("/register")
@@ -71,11 +88,13 @@ public class PublicApi {
     }
 
     public PublicApi(Logger log, UserService userService, JwtTokenUtil jwtTokenUtil,
-                     FirebaseAuthService firebaseService, ModelMapper modelMapper) {
+                     FirebaseAuthService firebaseService, RefreshTokenService refreshTokenService,
+                     ModelMapper modelMapper) {
         this.log = log;
         this.userService = userService;
         this.jwtTokenUtil = jwtTokenUtil;
         this.firebaseService = firebaseService;
+        this.refreshTokenService = refreshTokenService;
         this.modelMapper = modelMapper;
     }
 }

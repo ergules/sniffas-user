@@ -6,6 +6,7 @@ import app.vaazar.domain.deleteAccount.boundary.impl.DeleteAccountServiceImpl;
 import app.vaazar.domain.deleteAccount.control.DeleteRequestRepository;
 import app.vaazar.domain.deleteAccount.entity.DeleteAccountRequest;
 import app.vaazar.domain.deleteAccount.entity.DeleteRequestStatus;
+import app.vaazar.domain.refreshtoken.boundary.RefreshTokenService;
 import app.vaazar.domain.user.boundary.impl.UserServiceImpl;
 import app.vaazar.domain.user.control.UserRepository;
 import app.vaazar.domain.user.entity.Role;
@@ -240,10 +241,11 @@ public class UserServiceImplIntegrationTests {
 
         firebaseAuthService = Mockito.mock(FirebaseAuthService.class);
         ApplicationEventPublisher eventPublisher = Mockito.mock(ApplicationEventPublisher.class);
+        RefreshTokenService refreshTokenService = Mockito.mock(RefreshTokenService.class);
         Logger dASL = LoggerFactory.getLogger(DeleteAccountServiceImpl.class);
-        DeleteAccountService deleteAccountService = new DeleteAccountServiceImpl(deleteRequestRepo, userRepo, eventPublisher, dASL);
+        DeleteAccountService deleteAccountService = new DeleteAccountServiceImpl(deleteRequestRepo, userRepo, refreshTokenService, eventPublisher, dASL);
 
         this.entityManager = entityManager;
-        this.service = new UserServiceImpl(userRepo, firebaseAuthService, deleteAccountService, eventPublisher);
+        this.service = new UserServiceImpl(userRepo, firebaseAuthService, deleteAccountService, refreshTokenService, eventPublisher);
     }
 }

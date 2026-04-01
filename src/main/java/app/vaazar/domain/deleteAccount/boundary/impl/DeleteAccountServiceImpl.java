@@ -5,6 +5,7 @@ import app.vaazar.domain.deleteAccount.control.DeleteRequestRepository;
 import app.vaazar.domain.deleteAccount.entity.DeleteAccountRequest;
 import app.vaazar.domain.deleteAccount.entity.DeleteRequestStatus;
 import app.vaazar.domain.event.entity.UserDeletedEvent;
+import app.vaazar.domain.refreshtoken.boundary.RefreshTokenService;
 import app.vaazar.domain.user.control.UserRepository;
 import app.vaazar.domain.user.entity.User;
 import org.slf4j.Logger;
@@ -25,6 +26,7 @@ import static app.vaazar.domain.deleteAccount.entity.DeleteRequestStatus.*;
 public class DeleteAccountServiceImpl implements DeleteAccountService {
     private final DeleteRequestRepository deleteRequestRepo;
     private final UserRepository userRepo;
+    private final RefreshTokenService refreshTokenService;
     private final ApplicationEventPublisher eventPublisher;
     private final Logger log;
 
@@ -73,14 +75,18 @@ public class DeleteAccountServiceImpl implements DeleteAccountService {
             request.setStatus(AUTO_DELETE_COMPLETED);
             request.getRequester().setDeleted(true);
             userRepo.save(request.getRequester());
+            refreshTokenService.deleteByUser(request.getRequester());
             deleteRequestRepo.save(request);
             eventPublisher.publishEvent(new UserDeletedEvent(request.getRequester()));
         }
     }
 
-    public DeleteAccountServiceImpl(DeleteRequestRepository deleteRequestRepo, UserRepository userRepo, ApplicationEventPublisher eventPublisher, Logger log) {
+    public DeleteAccountServiceImpl(DeleteRequestRepository deleteRequestRepo, UserRepository userRepo,
+                                    RefreshTokenService refreshTokenService,
+                                    ApplicationEventPublisher eventPublisher, Logger log) {
         this.deleteRequestRepo = deleteRequestRepo;
         this.userRepo = userRepo;
+        this.refreshTokenService = refreshTokenService;
         this.eventPublisher = eventPublisher;
         this.log = log;
     }

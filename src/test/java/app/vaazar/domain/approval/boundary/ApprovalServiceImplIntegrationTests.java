@@ -240,7 +240,7 @@ public class ApprovalServiceImplIntegrationTests {
 
         @Bean
         public UserService userService() {
-            return new UserServiceImpl(userRepo, null, null, null);
+            return new UserServiceImpl(userRepo, null, null, null, null);
         }
 
         @Bean

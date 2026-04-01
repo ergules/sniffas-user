@@ -1,5 +1,6 @@
 package app.vaazar.config;
 
+import app.vaazar.config.exception.AuthorisationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -16,6 +17,12 @@ import java.util.NoSuchElementException;
 public class ApiExceptionHandler {
 
     private final Logger log = LoggerFactory.getLogger(this.getClass());
+
+    @ExceptionHandler(AuthorisationException.class)
+    public ResponseEntity<ErrorDetails> handleAuthorisationException(AuthorisationException e, WebRequest req) {
+        log.error(e.getLocalizedMessage());
+        return new ResponseEntity<>(new ErrorDetails(e, req), HttpStatus.UNAUTHORIZED);
+    }
 
     @ExceptionHandler(AccessDeniedException.class)
     public ResponseEntity<ErrorDetails> handleAccessDeniedException(AccessDeniedException e, WebRequest req) {

@@ -5,6 +5,7 @@ import app.vaazar.domain.deleteAccount.boundary.DeleteAccountService;
 import app.vaazar.domain.deleteAccount.entity.DeleteAccountRequest;
 import app.vaazar.domain.event.entity.UserCreatedEvent;
 import app.vaazar.domain.event.entity.UserDeletedEvent;
+import app.vaazar.domain.refreshtoken.boundary.RefreshTokenService;
 import app.vaazar.domain.user.boundary.UserService;
 import app.vaazar.domain.user.control.UserRepository;
 import app.vaazar.domain.user.entity.Role;
@@ -30,6 +31,7 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepo;
     private final FirebaseAuthService firebaseAuthService;
     private final DeleteAccountService deleteAccountService;
+    private final RefreshTokenService refreshTokenService;
     private final ApplicationEventPublisher eventPublisher;
     private final Pattern emailQueryPattern = Pattern.compile("[A-Z0-9._%+-]+@[A-Z0-9.-]+", Pattern.CASE_INSENSITIVE);
 
@@ -95,6 +97,7 @@ public class UserServiceImpl implements UserService {
         if (user.getRole() == Role.USER) {
             user.setDeleted(true);
             userRepo.save(user);
+            refreshTokenService.deleteByUser(user);
             eventPublisher.publishEvent(new UserDeletedEvent(user));
         }
         if (user.getRole() == Role.SELLER || user.getRole() == Role.COMPANY) {
@@ -117,10 +120,13 @@ public class UserServiceImpl implements UserService {
             return userRepo.findBasicUsers(sellersOnly, page);
     }
 
-    public UserServiceImpl(UserRepository userRepo, FirebaseAuthService firebaseAuthService, DeleteAccountService deleteAccountService, ApplicationEventPublisher eventPublisher) {
+    public UserServiceImpl(UserRepository userRepo, FirebaseAuthService firebaseAuthService,
+                           DeleteAccountService deleteAccountService, RefreshTokenService refreshTokenService,
+                           ApplicationEventPublisher eventPublisher) {
         this.userRepo = userRepo;
         this.firebaseAuthService = firebaseAuthService;
         this.deleteAccountService = deleteAccountService;
+        this.refreshTokenService = refreshTokenService;
         this.eventPublisher = eventPublisher;
     }
 }

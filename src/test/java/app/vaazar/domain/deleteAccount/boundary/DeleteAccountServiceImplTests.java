@@ -4,6 +4,7 @@ import app.vaazar.domain.deleteAccount.boundary.impl.DeleteAccountServiceImpl;
 import app.vaazar.domain.deleteAccount.control.DeleteRequestRepository;
 import app.vaazar.domain.deleteAccount.entity.DeleteAccountRequest;
 import app.vaazar.domain.deleteAccount.entity.DeleteRequestStatus;
+import app.vaazar.domain.refreshtoken.boundary.RefreshTokenService;
 import app.vaazar.domain.user.control.UserRepository;
 import app.vaazar.domain.user.entity.User;
 import org.junit.jupiter.api.Test;
@@ -32,6 +33,8 @@ public class DeleteAccountServiceImplTests {
     DeleteRequestRepository deleteRequestRepo;
     @Mock
     UserRepository userRepo;
+    @Mock
+    RefreshTokenService refreshTokenService;
     @Mock
     ApplicationEventPublisher eventPublisher;
     @Mock
@@ -160,6 +163,9 @@ public class DeleteAccountServiceImplTests {
         service.handleDueDeletes();
         verify(userRepo, times(2)).save(any());
         verify(deleteRequestRepo, times(2)).save(any());
+        verify(refreshTokenService, times(2)).deleteByUser(any());
+        verify(refreshTokenService).deleteByUser(timely1.getRequester());
+        verify(refreshTokenService).deleteByUser(timely2.getRequester());
 
         assertTrue(timely1.getRequester().getDeleted());
         assertTrue(timely2.getRequester().getDeleted());

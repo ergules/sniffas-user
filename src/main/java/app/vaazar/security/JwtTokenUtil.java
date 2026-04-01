@@ -24,7 +24,7 @@ public class JwtTokenUtil {
     private final String jwtIssuer = "sniffas";
     private static final String ROLES_KEY = "roles";
     private static final String SEPARATOR = "::";
-    public static final long EXPIRATION_IN_SECONDS = 6 * 60 * 60; // 6 hours
+    public static final long EXPIRATION_IN_SECONDS = 15 * 60; // 15 minutes
     private final Logger logger;
 
     public JwtTokenUtil(@Value("${app.jwt-secret}") String jwtSecret, Logger logger) {
