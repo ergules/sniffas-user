@@ -94,5 +94,5 @@ If you want to dockerize the project:
 
 ```bash
 docker build -t sniffas-user-service .
-docker run -p 8080:8080 sniffas-user-service
+docker run -e SPRING_PROFILES_ACTIVE=local -p 8080:8080 sniffas-user-service
 ```
