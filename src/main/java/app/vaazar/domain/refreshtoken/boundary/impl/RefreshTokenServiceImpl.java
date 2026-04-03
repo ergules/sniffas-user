@@ -6,6 +6,7 @@ import app.vaazar.domain.refreshtoken.control.RefreshTokenRepository;
 import app.vaazar.domain.refreshtoken.entity.RefreshToken;
 import app.vaazar.domain.user.entity.User;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -14,6 +15,7 @@ import java.util.UUID;
 
 @Service
 @Transactional
+@ConditionalOnProperty(name = "app.redis.active", havingValue = "false", matchIfMissing = true)
 public class RefreshTokenServiceImpl implements RefreshTokenService {
 
     private final RefreshTokenRepository refreshTokenRepo;

@@ -23,5 +23,13 @@ services:
       - "5672:5672"
       - "15672:15672"
 
+  redis:
+    image: redis:7-alpine
+    container_name: vaazar-redis
+    restart: always
+    command: ["redis-server", "--requirepass", "${REDIS_PASSWORD:-_redispw}"]
+    ports:
+      - "6379:6379"
+
 volumes:
   mysql_data:

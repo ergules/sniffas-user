@@ -10,6 +10,8 @@ The system allows users to log in via Firebase and then manages API access by ge
 
 The system uses both a Firebase ID Token and its own internal JWT mechanism. Access tokens are short-lived (15 minutes) and paired with long-lived refresh tokens (30 days) to limit the window of access after user deletion, without forcing frequent re-authentication.
 
+Refresh tokens are opaque, server-side values stored in **Redis** (with automatic TTL expiry) rather than MySQL, so the high-frequency `/refresh` and `/login` calls do not load the primary database. Tokens remain individually revocable — deleting a user wipes all their refresh tokens from Redis immediately. Set `app.redis.active=false` to fall back to the MySQL-backed store.
+
 ```mermaid
 sequenceDiagram
     participant FE as Frontend / Mobile
@@ -41,10 +43,10 @@ Follow the steps below to run the project in your local environment.
 ### Requirements
 - Java 11
 - Maven
-- Docker (for Database and RabbitMQ)
+- Docker (for Database, RabbitMQ and Redis)
 
 ### 1. Start Infrastructure (Docker)
-You can use the `docker-compose.yml` file in the project to quickly start MySQL and RabbitMQ:
+You can use the `docker-compose.yml` file in the project to quickly start MySQL, RabbitMQ and Redis:
 
 ```bash
 docker-compose up -d
